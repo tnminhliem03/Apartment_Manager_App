@@ -2,12 +2,12 @@ from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from apartment import serializers, paginators
-from apartment.models import User, Payment, Receipt, SecurityCard, Package, Complaint, Survey
+from apartment.models import User, Payment, Receipt, SecurityCard, Package, Complaint, Survey, QuestionSurvey, AnswerSurvey
 
 class PermissionsViewSet(viewsets.ViewSet):
     def get_permissions(self):
         if self.action in ['get_current_user', 'paid', 'updated_sc', 'add_complaint',
-                           'updated_complaint', 'fill_survey']:
+                           'updated_complaint', 'fill_answer']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
@@ -70,7 +70,7 @@ class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return queryset
 
-class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPIView):
+class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView):
     queryset = SecurityCard.objects.filter(active=True)
     serializer_class = serializers.SecurityCardSerializer
     paginator_class = paginators.BasePaginator
@@ -84,18 +84,18 @@ class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView, generics.Cre
 
         return queryset
 
-    # @action(methods=['post'], url_path='create-sc', detail=False)
-    # def add_sc(self, request):
-    #     sc = SecurityCard.objects.create(name=request.data.get('name'),
-    #                                name_register=request.data.get('name_register'),
-    #                                vehicle_number=request.data.get('vehicle_number'), user=request.user)
-    #     return Response(serializers.SecurityCardSerializer(sc).data)
+    @action(methods=['post'], url_path='create-sc', detail=False)
+    def add_sc(self, request):
+        sc = SecurityCard.objects.create(name=request.data.get('name'),
+                                         name_register=request.data.get('name_register'),
+                                         vehicle_number=request.data.get('vehicle_number'), user=request.user)
+        return Response(serializers.SecurityCardSerializer(sc).data)
 
     @action(methods=['patch'], url_path='update-sc', detail=True)
     def updated_sc(self, request, pk):
         sc = SecurityCard.objects.get(pk=pk)
-        # if sc.user != request.user:
-        #     return Response(status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        if sc.user != request.user:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         for k, v in request.data.items():
             setattr(sc, k, v)
         sc.save()
@@ -105,10 +105,14 @@ class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView, generics.Cre
 class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Package.objects.filter(active=True)
     serializer_class = serializers.PackageSerializer
-    paginator_class = paginators.BasePaginator
+    pagination_class = paginators.BasePaginator
 
     def get_queryset(self):
         queryset = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
 
         user_id = self.request.query_params.get('user_id')
         if user_id:
@@ -116,9 +120,9 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
 
         return queryset
 
-    @action(methods=['patch'], url_path='update-pack', detail=True)
+    @action(methods=['patch'], url_path='update', detail=True)
     def updated_package(self, request, pk):
-        p = Package.objects.get(pk=pk)
+        p = self.get_object()
         for k, v in request.data.items():
             setattr(p, k, v)
         p.save()
@@ -126,45 +130,98 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
         return Response(serializers.PackageSerializer(p).data, status=status.HTTP_200_OK)
 
 class ComplaintViewSet(PermissionsViewSet, generics.ListAPIView):
-    queryset = Complaint.objects.all()
+    queryset = Complaint.objects.filter(active=True)
     serializer_class = serializers.ComplaintSerializer
-    paginator_class = paginators.BasePaginator
+    pagination_class = paginators.BasePaginator
 
-    @action(methods=['post'], url_path='create-comp', detail=False)
+    def get_queryset(self):
+        queryset = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
+
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        return queryset
+
+    @action(methods=['post'], url_path='create-complaint', detail=False)
     def add_complaint(self, request):
         comp = Complaint.objects.create(name=request.data.get('name'), content=request.data.get('content'),
                                         image=request.data.get('image'), user=request.user)
         return Response(serializers.ComplaintSerializer(comp).data)
 
-    @action(methods=['patch'], url_path='update-comp', detail=True)
+    @action(methods=['patch'], url_path='edit-complaint', detail=True)
     def updated_complaint(self, request, pk):
-        comp = Complaint.objects.get(pk=pk)
+        comp = self.get_object()
         if comp.user != request.user:
-            return Response(status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         for k, v in request.data.items():
             setattr(comp, k, v)
         comp.save()
 
         return Response(serializers.ComplaintSerializer(comp).data, status=status.HTTP_200_OK)
 
-class SurveyViewSet(PermissionsViewSet, generics.ListAPIView):
+    @action(methods=['patch'], url_path='handle-complaint', detail=True)
+    def handle_complaint(self, request, pk):
+        comp = self.get_object()
+        setattr(comp, 'active', '0')
+        comp.save()
+
+        return Response(serializers.ComplaintSerializer(comp).data, status=status.HTTP_200_OK)
+
+class SurveyViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Survey.objects.all()
     serializer_class = serializers.SurveySerializer
     pagination_class = paginators.BasePaginator
 
-    @action(methods=['post'], url_path='create-sur', detail=False)
-    def add_survey(self, request):
-        sur = Survey.objects.create(name=request.data.get('name'),
-                                        content=request.data.get('content'))
-        return Response(serializers.SurveySerializer(sur).data)
+    def get_queryset(self):
+        queryset = self.queryset
 
-    @action(methods=['patch'], url_path='fill-sur', detail=True)
-    def fill_survey(self, request, pk):
-        sur = Survey.objects.get(pk=pk)
-        if sur.user != request.user:
-            return Response(status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        for k, v in request.data.items():
-            setattr(sur, k, v)
-        sur.save()
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
 
-        return Response(serializers.SurveySerializer(sur).data, status=status.HTTP_200_OK)
+        return queryset
+
+    @action(methods=['post'], url_path='questions', detail=True)
+    def create_question(self, request, pk):
+        question = QuestionSurvey.objects.create(content=request.data.get('content'), survey=self.get_object())
+        return Response(serializers.QuestionSurveySerializer(question).data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], url_path='answers', detail=True)
+    def fill_answer(self, request, pk):
+        answer = AnswerSurvey.objects.create(content=request.data.get('content'),
+                                             question_id=request.data.get('question_id'), user=request.user)
+        return Response(serializers.AnswerSurveySerializer(answer).data, status=status.HTTP_200_OK)
+
+class QuestionSurveyViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = QuestionSurvey.objects.all()
+    serializer_class = serializers.QuestionSurveySerializer
+    pagination_class = paginators.BasePaginator
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        survey = self.request.query_params.get('survey')
+        if survey:
+            queryset = queryset.filter(survey__icontains=survey)
+
+        return queryset
+
+class AnswerSurveyViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = AnswerSurvey.objects.all()
+    serializer_class = serializers.AnswerSurveySerializer
+    pagination_class = paginators.BasePaginator
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        question = self.request.query_params.get('question')
+        if question:
+            queryset = queryset.filter(question_icontains=question)
+
+        return queryset

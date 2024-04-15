@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from m_apartment_api import settings
-from apartment.models import User, Payment, Receipt, SecurityCard, Package, Complaint, Survey
+from apartment.models import User, Payment, Receipt, SecurityCard, Package, Complaint, Survey, QuestionSurvey, AnswerSurvey
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,4 +65,15 @@ class ComplaintSerializer(ImageSerializer):
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
-        fields = BaseSerializer.Meta.fields + ['content']
+        fields = ['id', 'name', 'created_date', 'updated_date']
+
+class QuestionSurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionSurvey
+        fields = ['id', 'content', 'created_date', 'updated_date', 'survey']
+
+class AnswerSurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerSurvey
+        fields = ['id', 'content', 'created_date', 'updated_date', 'question', 'user']
+

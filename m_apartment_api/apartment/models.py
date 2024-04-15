@@ -63,5 +63,18 @@ class Complaint(ItemModel):
     content = RichTextField()
     image = CloudinaryField(null=True)
 
-class Survey(ItemModel):
+class Survey(BaseModel):
+    description = RichTextField()
+
+class QuestionSurvey(models.Model):
     content = RichTextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+
+class AnswerSurvey(models.Model):
+    content = RichTextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    question = models.ForeignKey(QuestionSurvey, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
