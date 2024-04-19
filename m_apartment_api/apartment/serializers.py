@@ -1,10 +1,13 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from m_apartment_api import settings
-from apartment.models import User, Payment, Receipt, SecurityCard, Package, Complaint, Survey, QuestionSurvey, AnswerSurvey
+from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
+                              QuestionSurvey, AnswerSurvey, ResultSurvey)
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['id', 'name', 'created_date', 'updated_date', 'user']
+        fields = ['id', 'name', 'created_date', 'updated_date', 'resident']
 
 class ImageSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
@@ -13,14 +16,18 @@ class ImageSerializer(serializers.ModelSerializer):
 
         return rep
 
-class UserSerializer(serializers.ModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ['id', 'name', 'number', 'image', 'square', 'created_date', 'updated_date', 'is_empty']
+
+class ResidentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         data = validated_data.copy()
-        user = User(**data)
-        user.set_password(data['password'])
-        user.save()
-
-        return user
+        resident = Resident(**data)
+        resident.set_password(data['password'])
+        resident.save()
+        return resident
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -29,8 +36,8 @@ class UserSerializer(serializers.ModelSerializer):
         return rep
 
     class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'password', 'email', 'avatar']
+        model = Resident
+        fields = ['id', 'username', 'first_name', 'last_name', 'password', 'email', 'phone', 'avatar', 'room']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -40,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = BaseSerializer.Meta.fields + ['amount', 'deadline_date']
+        fields = BaseSerializer.Meta.fields + ['amount']
 
 class ReceiptSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,15 +72,20 @@ class ComplaintSerializer(ImageSerializer):
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
-        fields = ['id', 'name', 'created_date', 'updated_date']
+        fields = ['id', 'name', 'description', 'created_date', 'updated_date']
 
 class QuestionSurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionSurvey
-        fields = ['id', 'content', 'created_date', 'updated_date', 'survey']
+        fields = ['id', 'content', 'created_date', 'survey']
 
 class AnswerSurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerSurvey
-        fields = ['id', 'content', 'created_date', 'updated_date', 'question', 'user']
+        fields = ['id', 'content', 'created_date', 'question', 'resident']
+
+class ResultSurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResultSurvey
+        fields = ['id', 'survey', 'question', 'answer', 'resident']
 

@@ -1,23 +1,12 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
-
 # Create your models here.
 
-# class Room(models.Model):
-#     name = models.CharField(max_length=10)
-#     created_date =models.DateTimeField(auto_now_add=True, null=True)
-#     updated_date =models.DateTimeField(auto_now=True, null=True)
-#     active = models.BooleanField(default=True)
-#     is_hired = models.BooleanField(default=False)
-#     description = RichTextField()
-#     amount = models.DecimalField(max_digits=9, decimal_places=7)
-#     number_of_people = models.DecimalField(max_digits=2, decimal_places=1)
-
 class User(AbstractUser):
-    avatar = CloudinaryField(null=True)
-    # room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    pass
 
 class BaseModel(models.Model):
     name = models.CharField(max_length=255)
@@ -30,26 +19,38 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+class Room(BaseModel):
+    number = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=255)
+    image = CloudinaryField()
+    square = models.DecimalField(max_digits=5, decimal_places=2)
+    is_empty = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.number
+
+phone_validator = RegexValidator(regex=r'^\d+$', message="Số điện thoại chỉ được chứa các số.")
+
+class Resident(User):
+    room = models.OneToOneField(Room, on_delete=models.SET_NULL, null=True)
+    phone = models.CharField(max_length=11, validators=[phone_validator], unique=True)
+    avatar = CloudinaryField()
+    answered_surveys = models.ManyToManyField('Survey', related_name='answered_residents')
+
 class ItemModel(BaseModel):
     active = models.BooleanField(default=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
-# class Furniture(BaseModel):
-#     status_choices = (('good', 'Good'), ('bad', 'Bad'))
-#     status = models.CharField(max_length=4, choices=status_choices, default='Good')
-#     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-
 class Payment(ItemModel):
-    amount = models.DecimalField(max_digits=13, decimal_places=4)
-    deadline_date = models.DateTimeField()
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
 
 class Receipt(BaseModel):
-    amount = models.DecimalField(max_digits=13, decimal_places=4)
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
 
 class SecurityCard(ItemModel):
     name_register = models.CharField(max_length=255)
@@ -57,24 +58,35 @@ class SecurityCard(ItemModel):
 
 class Package(ItemModel):
     note = models.CharField(max_length=255)
-    image = CloudinaryField(null=True)
+    image = CloudinaryField()
 
 class Complaint(ItemModel):
     content = RichTextField()
-    image = CloudinaryField(null=True)
+    image = CloudinaryField()
 
 class Survey(BaseModel):
     description = RichTextField()
+    active = models.BooleanField(default=True)
 
 class QuestionSurvey(models.Model):
     content = RichTextField()
     created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
 
 class AnswerSurvey(models.Model):
     content = RichTextField()
     created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
     question = models.ForeignKey(QuestionSurvey, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
+
+class ResultSurvey(models.Model):
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    question = models.ForeignKey(QuestionSurvey, on_delete=models.CASCADE)
+    answer = models.ForeignKey(AnswerSurvey, on_delete=models.CASCADE)
