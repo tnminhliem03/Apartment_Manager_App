@@ -12,57 +12,9 @@ from django.conf import settings
 from django.db import migrations, models
 
 def load_data(apps, schema_editor):
-    User = apps.get_model('m_apartment_api', 'User')
-    Room = apps.get_model('m_apartment_api', 'Room')
-    Resident = apps.get_model('m_apartment_api', 'Resident')
-    Payment = apps.get_model('m_apartment_api', 'Payment')
-    Receipt = apps.get_model('m_apartment_api', 'Receipt')
-    SecurityCard = apps.get_model('m_apartment_api', 'SecurityCard')
-    Package = apps.get_model('m_apartment_api', 'Package')
-    Complaint = apps.get_model('m_apartment_api', 'Complaint')
-    Survey = apps.get_model('m_apartment_api', 'Survey')
-    QuestionSurvey = apps.get_model('m_apartment_api', 'QuestionSurvey')
-    AnswerSurvey = apps.get_model('m_apartment_api', 'AnswerSurvey')
-    ResultSurvey = apps.get_model('m_apartment_api', 'ResultSurvey')
-
-    with open('full_data.json', 'r') as file:
-        data = json.load(file)
-
-    for user_data in data['users']:
-        User.objects.create(**user_data)
-
-    for room_data in data['rooms']:
-        Room.objects.create(**room_data)
-
-    for resident_data in data['residents']:
-        Resident.objects.create(**resident_data)
-
-    for payment_data in data['payments']:
-        Payment.objects.create(**payment_data)
-
-    for receipt_data in data['receipts']:
-        Receipt.objects.create(**receipt_data)
-
-    for securitycard_data in data['securitycards']:
-        SecurityCard.objects.create(**securitycard_data)
-
-    for package_data in data['packages']:
-        Package.objects.create(**package_data)
-
-    for complaint_data in data['complaints']:
-        Complaint.objects.create(**complaint_data)
-
-    for survey_data in data['surveys']:
-        Survey.objects.create(**survey_data)
-
-    for questionsurvey_data in data['questionsurveys']:
-        QuestionSurvey.objects.create(**questionsurvey_data)
-
-    for answersurvey_data in data['answersurveys']:
-        AnswerSurvey.objects.create(**answersurvey_data)
-
-    for resultsurvey_data in data['resultsurveys']:
-        ResultSurvey.objects.create(**resultsurvey_data)
+    with open('full_data.json', 'r') as f:
+        sql_statements = f.read()
+        schema_editor.excute(sql_statements)
 
 class Migration(migrations.Migration):
 
