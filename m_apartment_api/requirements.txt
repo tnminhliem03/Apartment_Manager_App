@@ -2,6 +2,7 @@ asgiref==3.8.1
 certifi==2024.2.2
 cffi==1.16.0
 charset-normalizer==3.3.2
+chartjs==1.2
 cloudinary==1.39.1
 cryptography==42.0.5
 Django==5.0.4
