@@ -12,8 +12,6 @@ from django.conf import settings
 from django.core.management import call_command
 from django.db import migrations, models
 
-def load_data(apps, schema_editor):
-    call_command("loaddata", "data.json")
 
 class Migration(migrations.Migration):
 
@@ -215,6 +213,4 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-
-        migrations.RunPython(load_data),
     ]
