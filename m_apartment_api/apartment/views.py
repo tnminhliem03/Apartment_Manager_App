@@ -11,7 +11,7 @@ from apartment.models import (Resident, Room, Payment, Receipt, SecurityCard, Pa
 class PermissionsViewSet(viewsets.ViewSet):
     def get_permissions(self):
         if self.action in ['get_payment', 'get_receipt', 'get_sc', 'get_package', 'get_complaint',
-                           'update_profile', 'paid', 'create_sc', 'updated_sc', 'add_complaint',
+                           'get_survey', 'update_profile', 'paid', 'create_sc', 'updated_sc', 'add_complaint',
                            'fill_answer']:
             return [permissions.IsAuthenticated()]
 
