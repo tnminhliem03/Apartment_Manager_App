@@ -93,12 +93,17 @@ WSGI_APPLICATION = 'm_apartment_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'apartment_manager_db_test',
         'NAME': 'apartment_manager_db',
         'USER': 'root',
         'PASSWORD': 'Liemkute03',
         'HOST': ''  # mặc định localhost
     }
 }
+
+# db test
+# CLIENT_ID = '8IdgCaXvlMMtgDwPdgygH1aVzeJL55bCEGqRrLBu'
+# CLIENT_SECRET = 'JYOGVV7TITmzD0synPyFcvbjIJmi5cExuKrzqYXBTmUjCXC3F8tZgHCYa6XVFSppPSzo7Y9XUPBsnb4XJhwMTO4w1PMdfKrnC4COtjXfAeGOKtWjkEedY4Nlwrcw8SfQ'
 
 import cloudinary
 

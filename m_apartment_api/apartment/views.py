@@ -3,24 +3,35 @@ from django.dispatch import receiver
 from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from apartment import serializers, paginators
+from apartment import serializers, paginators, perms
 from django.contrib.auth.hashers import make_password
 from apartment.models import (Resident, Room, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
                               QuestionSurvey, AnswerSurvey, ResultSurvey)
 
 class PermissionsViewSet(viewsets.ViewSet):
     def get_permissions(self):
-        if self.action in ['get_payment', 'get_receipt', 'get_sc', 'get_package', 'get_complaint',
-                           'get_survey', 'update_profile', 'paid', 'create_sc', 'updated_sc', 'add_complaint',
-                           'fill_answer']:
+        if self.action in ['update_profile', 'paid', 'add_complaint', 'fill_answer']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
 
 class RoomViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
-    queryset = Room.objects.all()
+    queryset = Room.objects.filter(is_empty=True)
     serializer_class = serializers.RoomSerializer
     pagination_class = paginators.BasePaginator
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
+
+        n = self.request.query_params.get('n')
+        if n:
+            queryset = queryset.filter(number__icontains=n)
+
+        return queryset
 
     @receiver(post_save, sender=Resident)
     def update_room_on_create(sender, instance, **kwargs):
@@ -42,36 +53,6 @@ class ResidentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateA
     pagination_class = paginators.BasePaginator
     parser_classes = [parsers.MultiPartParser, ]
 
-    @action(methods=['get'], url_path='payments', detail=True)
-    def get_payment(self, request, pk):
-        payments = self.get_object().payment_set.select_related('resident').order_by('-updated_date')
-        return Response(serializers.PaymentSerializer(payments, many=True).data)
-
-    @action(methods=['get'], url_path='receipts', detail=True)
-    def get_receipt(self, request, pk):
-        receipts = self.get_object().receipt_set.select_related('resident').order_by('-updated_date')
-        return Response(serializers.ReceiptSerializer(receipts, many=True).data)
-
-    @action(methods=['get'], url_path='sc', detail=True)
-    def get_sc(self, request, pk):
-        sc = self.get_object().securitycard_set.select_related('resident').order_by('updated_date')
-        return Response(serializers.SecurityCardSerializer(sc, many=True).data)
-
-    @action(methods=['get'], url_path='packages', detail=True)
-    def get_package(self, request, pk):
-        packages = self.get_object().package_set.select_related('resident').order_by('-updated_date')
-        return Response(serializers.PackageSerializer(packages, many=True).data)
-
-    @action(methods=['get'], url_path='complaints', detail=True)
-    def get_complaint(self, request, pk):
-        complaints = self.get_object().complaint_set.select_related('resident').order_by('-updated_date')
-        return Response(serializers.ComplaintSerializer(complaints, many=True).data)
-
-    @action(methods=['get'], url_path='surveys', detail=True)
-    def get_survey(self, request, pk):
-        survey = self.get_object().answered_surveys.all()
-        return Response(serializers.SurveySerializer(survey, many=True).data)
-
     @action(methods=['patch'], url_path='profile', detail=True)
     def update_profile(self, request, pk):
         resident = self.get_object()
@@ -85,17 +66,18 @@ class ResidentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateA
 
         return Response(serializers.ResidentSerializer(resident).data)
 
-class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView):
+class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
     queryset = SecurityCard.objects.filter(active=True)
     serializer_class = serializers.SecurityCardSerializer
     pagination_class = paginators.BasePaginator
+    permission_classes = [perms.Owner]
 
     def get_queryset(self):
         queryset = self.queryset
 
-        resident_id = self.request.query_params.get('resident_id')
-        if resident_id:
-            queryset = queryset.filter(resident_id=resident_id)
+        user_id = self.request.query_params.get('resident_id')
+        if user_id:
+            queryset = queryset.filter(resident_id=user_id)
 
         return queryset
 
@@ -109,8 +91,6 @@ class SecurityCardViewSet(PermissionsViewSet, generics.ListAPIView):
     @action(methods=['patch'], url_path='update-sc', detail=True)
     def updated_sc(self, request, pk):
         sc = self.get_object()
-        if sc.resident.id != request.user.id:
-            return Response(status=status.HTTP_403_FORBIDDEN)
         for k, v in request.data.items():
             setattr(sc, k, v)
         sc.save()
@@ -129,9 +109,9 @@ class PaymentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAP
         if q:
             queryset = queryset.filter(name__icontains=q)
 
-        resident_id = self.request.query_params.get('resident_id')
-        if resident_id:
-            queryset = queryset.filter(resident_id=resident_id)
+        r_id = self.request.query_params.get('r_id')
+        if r_id:
+            queryset = queryset.filter(resident_id=r_id)
 
         return queryset
 
@@ -155,9 +135,13 @@ class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
     def get_queryset(self):
         queryset = self.queryset
 
-        user_id = self.request.query_params.get('user_id')
-        if user_id:
-            queryset = queryset.filter(user_id=user_id)
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
+
+        r_id = self.request.query_params.get('r_id')
+        if r_id:
+            queryset = queryset.filter(resident_id=r_id)
 
         return queryset
 
@@ -173,9 +157,9 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
         if q:
             queryset = queryset.filter(name__icontains=q)
 
-        user_id = self.request.query_params.get('user_id')
-        if user_id:
-            queryset = queryset.filter(user_id=user_id)
+        r_id = self.request.query_params.get('r_id')
+        if r_id:
+            queryset = queryset.filter(resident_id=r_id)
 
         return queryset
 
@@ -188,7 +172,7 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
         return Response(serializers.PackageSerializer(p).data, status=status.HTTP_202_ACCEPTED)
 #
 class ComplaintViewSet(PermissionsViewSet, generics.ListAPIView):
-    queryset = Complaint.objects.filter(active=True)
+    queryset = Complaint.objects.all()
     serializer_class = serializers.ComplaintSerializer
     pagination_class = paginators.BasePaginator
 
@@ -199,9 +183,9 @@ class ComplaintViewSet(PermissionsViewSet, generics.ListAPIView):
         if q:
             queryset = queryset.filter(name__icontains=q)
 
-        user_id = self.request.query_params.get('user_id')
-        if user_id:
-            queryset = queryset.filter(user_id=user_id)
+        r_id = self.request.query_params.get('r_id')
+        if r_id:
+            queryset = queryset.filter(resident_id=r_id)
 
         return queryset
 
@@ -230,6 +214,10 @@ class SurveyViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPI
         q = self.request.query_params.get('q')
         if q:
             queryset = queryset.filter(name__icontains=q)
+
+        d = self.request.query_params.get('d')
+        if d:
+            queryset = queryset.filter(description__icontains=d)
 
         return queryset
     @action(methods=['post'], url_path='questions', detail=True)
@@ -265,9 +253,7 @@ class SurveyViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPI
     @staticmethod
     def add_survey_for_resident(resident, survey):
         resident.answered_surveys.add(survey)
-        resident.answered_surveys.add(resident)
-        survey.answered_residents.add(resident)
-        survey.answered_residents.add(survey)
+        # resident.answered_surveys.add(resident)
 
     @action(methods=['post'], url_path='(?P<question_id>[^/.]+)/answers', detail=True)
     def fill_answer(self, request, pk, question_id):
@@ -291,7 +277,7 @@ class SurveyViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPI
                                              question_id=question_id, resident_id=request.user.id)
 
         # Cập nhật kết quả khảo sát
-        ResultSurvey.objects.create(answer_id=answer.id, question_id=question_id, survey_id=pk,
+        self.get_object().resultsurvey_set.create(answer_id=answer.id, question_id=question_id,
                                     resident_id=request.user.id)
 
         # Kiểm tra Các câu hỏi trong khảo sát đã được trả lời hết chưa, trả về True nếu đúng
@@ -309,9 +295,9 @@ class QuestionSurveyViewSet(viewsets.ViewSet, generics.ListAPIView):
     def get_queryset(self):
         queryset = self.queryset
 
-        survey = self.request.query_params.get('survey')
-        if survey:
-            queryset = queryset.filter(survey__icontains=survey)
+        s = self.request.query_params.get('s')
+        if s:
+            queryset = queryset.filter(survey=s)
 
         return queryset
 
@@ -323,9 +309,9 @@ class AnswerSurveyViewSet(viewsets.ViewSet, generics.ListAPIView):
     def get_queryset(self):
         queryset = self.queryset
 
-        question = self.request.query_params.get('question')
-        if question:
-            queryset = queryset.filter(question_icontains=question)
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(question=q)
 
         return queryset
 
@@ -336,16 +322,17 @@ class ResultSurveyViewSet(viewsets.ViewSet, generics.ListAPIView):
 
     def get_queryset(self):
         queryset = self.queryset
-        survey = self.request.query_params.get('survey')
-        if survey:
-            queryset = queryset.filter(survey_icontains=survey)
 
-        question = self.request.query_params.get('question')
-        if question:
-            queryset = queryset.filter(question_icontains=question)
+        s = self.request.query_params.get('s')
+        if s:
+            queryset = queryset.filter(survey=s)
 
-        answer = self.request.query_params.get('answer')
-        if answer:
-            queryset = queryset.filter(answer_icontains=answer)
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(question=q)
+
+        r_id = self.request.query_params.get('r_id')
+        if r_id:
+            queryset = queryset.filter(resident_id=r_id)
 
         return queryset
