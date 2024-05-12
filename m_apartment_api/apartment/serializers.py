@@ -27,6 +27,7 @@ class ResidentSerializer(serializers.ModelSerializer):
         resident = Resident(**data)
         resident.set_password(data['password'])
         resident.save()
+
         return resident
 
     def to_representation(self, instance):

@@ -8,17 +8,11 @@ from django.contrib.auth.hashers import make_password
 from apartment.models import (Resident, Room, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
                               QuestionSurvey, AnswerSurvey, ResultSurvey)
 
-class PermissionsViewSet(viewsets.ViewSet):
-    def get_permissions(self):
-        if self.action in ['update_profile', 'paid', 'add_complaint', 'fill_answer']:
-            return [permissions.IsAuthenticated()]
-
-        return [permissions.AllowAny()]
-
-class RoomViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
+class RoomViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Room.objects.filter(is_empty=True)
     serializer_class = serializers.RoomSerializer
     pagination_class = paginators.BasePaginator
+    parser_classes = [parsers.MultiPartParser, ]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -34,30 +28,35 @@ class RoomViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView
         return queryset
 
     @receiver(post_save, sender=Resident)
-    def update_room_on_create(sender, instance, **kwargs):
+    def update_room_on_create_resident(sender, instance, **kwargs):
         if instance.room:
             instance.room.is_empty = False
             instance.room.save()
 
     @receiver(post_delete, sender=Resident)
-    def update_room_on_delete(sender, instance, **kwargs):
+    def update_room_on_delete_resident(sender, instance, **kwargs):
         if instance.room:
             instance.room.is_empty = True
             instance.room.save()
 
-
-class ResidentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPIView,
+class ResidentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView,
                       generics.DestroyAPIView):
     queryset = Resident.objects.filter(is_active=True)
     serializer_class = serializers.ResidentSerializer
     pagination_class = paginators.BasePaginator
     parser_classes = [parsers.MultiPartParser, ]
 
+    def get_permissions(self):
+        if self.action in ['destroy']:
+            return [perms.IsStaff()]
+        elif self.action == 'update_profile':
+            return [perms.Owner()]
+        return [permissions.AllowAny()]
+
     @action(methods=['patch'], url_path='profile', detail=True)
     def update_profile(self, request, pk):
+        print(self.action)
         resident = self.get_object()
-        if resident.id != request.user.id:
-            return Response(status=status.HTTP_403_FORBIDDEN)
         for k, v in request.data.items():
             if k == 'password':
                 v = make_password(v)
@@ -70,7 +69,12 @@ class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Destr
     queryset = SecurityCard.objects.filter(active=True)
     serializer_class = serializers.SecurityCardSerializer
     pagination_class = paginators.BasePaginator
-    permission_classes = [perms.Owner]
+
+    def get_permissions(self):
+        if self.action in ['create_sc', 'updated_sc', 'destroy']:
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -97,10 +101,16 @@ class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Destr
 
         return Response(serializers.SecurityCardSerializer(sc).data, status=status.HTTP_200_OK)
 
-class PaymentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPIView):
+class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = serializers.PaymentSerializer
     pagination_class = paginators.BasePaginator
+
+    def get_permissions(self):
+        if self.action == 'paid':
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -118,8 +128,6 @@ class PaymentViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAP
     @action(methods=['post'], url_path='paid', detail=True)
     def paid(self, request, pk):
         pay = self.get_object()
-        if pay.resident.id != request.user.id:
-            return Response(status=status.HTTP_403_FORBIDDEN)
         setattr(pay, 'active', '0')
         Receipt.objects.create(name=f'Hóa đơn {pay.name}', amount=pay.amount, payment=pay,
                                resident=pay.resident)
@@ -149,6 +157,13 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
     queryset = Package.objects.filter(active=True)
     serializer_class = serializers.PackageSerializer
     pagination_class = paginators.BasePaginator
+    parser_classes = [parsers.MultiPartParser, ]
+
+    def get_permissions(self):
+        if self.action in ['received_package']:
+            return [perms.IsStaff()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -171,10 +186,19 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
 
         return Response(serializers.PackageSerializer(p).data, status=status.HTTP_202_ACCEPTED)
 #
-class ComplaintViewSet(PermissionsViewSet, generics.ListAPIView):
+class ComplaintViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Complaint.objects.all()
     serializer_class = serializers.ComplaintSerializer
     pagination_class = paginators.BasePaginator
+    parser_classes = [parsers.MultiPartParser, ]
+
+    def get_permissions(self):
+        if self.action == 'add_complaint':
+            return [perms.Owner()]
+        elif self.action == 'handle_complaint':
+            return [perms.IsStaff()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -203,10 +227,18 @@ class ComplaintViewSet(PermissionsViewSet, generics.ListAPIView):
 
         return Response(serializers.ComplaintSerializer(comp).data, status=status.HTTP_202_ACCEPTED)
 #
-class SurveyViewSet(PermissionsViewSet, generics.ListAPIView, generics.CreateAPIView):
+class SurveyViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Survey.objects.all()
     serializer_class = serializers.SurveySerializer
     pagination_class = paginators.BasePaginator
+
+    def get_permissions(self):
+        if self.action == 'fill_answer':
+            return [permissions.IsAuthenticated()]
+        elif self.action == 'add_question':
+            return [perms.IsStaff()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queryset = self.queryset
