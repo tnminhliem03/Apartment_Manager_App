@@ -1,4 +1,4 @@
 from rest_framework import pagination
 
 class BasePaginator(pagination.PageNumberPagination):
-    page_size = 3
+    page_size = 6

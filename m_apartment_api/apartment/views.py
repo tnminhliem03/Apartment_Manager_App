@@ -51,7 +51,13 @@ class ResidentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPI
             return [perms.IsStaff()]
         elif self.action == 'update_profile':
             return [perms.Owner()]
+        elif self.action == 'get_current_resident':
+            return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
+
+    @action(methods=['get'], url_path='current', detail=False)
+    def get_current_resident(self, request):
+        return Response(serializers.ResidentSerializer(request.user.resident).data)
 
     @action(methods=['patch'], url_path='profile', detail=True)
     def update_profile(self, request, pk):
