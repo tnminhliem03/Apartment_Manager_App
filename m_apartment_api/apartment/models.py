@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
+from django import forms
 # Create your models here.
 
 class User(AbstractUser):
@@ -34,6 +35,9 @@ phone_validator = RegexValidator(regex=r'^\d+$', message="Số điện thoại c
 class Resident(User):
     room = models.OneToOneField(Room, on_delete=models.SET_NULL, null=True)
     phone = models.CharField(max_length=11, validators=[phone_validator], unique=True)
+    birthday = models.DateField(null=True)
+    gender_choices = [('male', 'Nam'), ('female', 'Nữ')]
+    gender = models.CharField(max_length=10, choices=gender_choices, null=True)
     avatar = CloudinaryField()
     answered_surveys = models.ManyToManyField('Survey', related_name='answered_residents')
 
@@ -55,6 +59,11 @@ class Receipt(BaseModel):
 class SecurityCard(ItemModel):
     name_register = models.CharField(max_length=255)
     vehicle_number = models.CharField(max_length=15)
+    vehicle_choices = [('bike', 'Xe đạp'), ('motorbike', 'Xe máy'), ('car', 'Xe hơi')]
+    type_vehicle = models.CharField(max_length=20, choices=vehicle_choices, null=True)
+
+class Notification(ItemModel):
+    content = models.CharField(max_length=255)
 
 class Package(ItemModel):
     note = models.CharField(max_length=255)
@@ -90,3 +99,13 @@ class ResultSurvey(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question = models.ForeignKey(QuestionSurvey, on_delete=models.CASCADE)
     answer = models.ForeignKey(AnswerSurvey, on_delete=models.CASCADE)
+
+# vnpay
+class PaymentForm(forms.Form):
+
+    order_id = forms.CharField(max_length=250)
+    order_type = forms.CharField(max_length=20)
+    amount = forms.IntegerField()
+    order_desc = forms.CharField(max_length=100)
+    bank_code = forms.CharField(max_length=20, required=False)
+    language = forms.CharField(max_length=2)

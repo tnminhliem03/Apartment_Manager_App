@@ -1,9 +1,16 @@
 [
 {
+    "model": "auth.group",
+    "fields": {
+        "name": "Resident"
+    }
+},
+
+{
     "model": "apartment.user",
     "fields": {
         "password": "pbkdf2_sha256$720000$vR2rrF3i9jTjAklgCayOjQ$GDVEvMcM4ha+QOM89RDksPMSgRcGzzKcH9rtJhTxmz4=",
-        "last_login": "2024-04-19T02:21:17.479Z",
+        "last_login": "2024-05-16T07:42:54.459Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",
@@ -28,8 +35,12 @@
         "email": "resident1@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T03:56:00.227Z",
-        "groups": [],
+        "date_joined": "2024-04-19T03:56:00Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -45,8 +56,12 @@
         "email": "resident2@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T03:58:58.704Z",
-        "groups": [],
+        "date_joined": "2024-04-19T03:58:58Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -62,8 +77,12 @@
         "email": "resident3@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T03:59:59.619Z",
-        "groups": [],
+        "date_joined": "2024-04-19T03:59:59Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -79,8 +98,12 @@
         "email": "resident4@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:00:33.852Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:00:33Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -96,8 +119,12 @@
         "email": "resident5@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:01:02.273Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:01:02Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -113,8 +140,12 @@
         "email": "resident6@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:01:33.948Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:01:33Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -130,8 +161,12 @@
         "email": "resident7@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:01:56.067Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:01:56Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -142,13 +177,17 @@
         "last_login": null,
         "is_superuser": false,
         "username": "resident8",
-        "first_name": "Cư Dân",
+        "first_name": "test",
         "last_name": "Số 8",
         "email": "resident8@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:02:28.289Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:02:28Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -164,8 +203,12 @@
         "email": "resident9@gmail.com",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-04-19T04:03:44.073Z",
-        "groups": [],
+        "date_joined": "2024-04-19T04:03:44Z",
+        "groups": [
+            [
+                "Resident"
+            ]
+        ],
         "user_permissions": []
     }
 },
@@ -585,6 +628,8 @@
         ],
         "room": 1,
         "phone": "0123456789",
+        "birthday": "1990-02-02",
+        "gender": "male",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": [
             1,
@@ -602,6 +647,8 @@
         ],
         "room": 2,
         "phone": "0234567890",
+        "birthday": "1989-01-01",
+        "gender": "female",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": [
             1,
@@ -619,6 +666,8 @@
         ],
         "room": 3,
         "phone": "0345678901",
+        "birthday": "1988-03-03",
+        "gender": "male",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": [
             1,
@@ -635,6 +684,8 @@
         ],
         "room": 11,
         "phone": "0456789012",
+        "birthday": "1987-04-04",
+        "gender": "female",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -647,6 +698,8 @@
         ],
         "room": 14,
         "phone": "0567890123",
+        "birthday": "1991-05-05",
+        "gender": "male",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -659,6 +712,8 @@
         ],
         "room": 19,
         "phone": "0678901234",
+        "birthday": "1992-06-06",
+        "gender": "female",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -671,6 +726,8 @@
         ],
         "room": 25,
         "phone": "0789012345",
+        "birthday": "1986-06-06",
+        "gender": "male",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -683,6 +740,8 @@
         ],
         "room": 28,
         "phone": "0890123456",
+        "birthday": "1993-07-07",
+        "gender": "female",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -695,6 +754,8 @@
         ],
         "room": 27,
         "phone": "0901234567",
+        "birthday": "1989-08-08",
+        "gender": "male",
         "avatar": "image/upload/v1713498839/regvcw9ph5vv5gmhmzf8.jpg",
         "answered_surveys": []
     }
@@ -802,20 +863,6 @@
     "model": "apartment.payment",
     "pk": 8,
     "fields": {
-        "name": "Phí gửi xe T4/2024",
-        "created_date": "2024-04-19T04:10:45.320Z",
-        "updated_date": "2024-04-19T04:10:45.320Z",
-        "active": true,
-        "resident": [
-            "resident8"
-        ],
-        "amount": "1478928.37"
-    }
-},
-{
-    "model": "apartment.payment",
-    "pk": 9,
-    "fields": {
         "name": "Tiền đền bù thiệt hại",
         "created_date": "2024-04-19T04:13:24.619Z",
         "updated_date": "2024-04-19T04:13:24.619Z",
@@ -828,54 +875,12 @@
 },
 {
     "model": "apartment.payment",
-    "pk": 10,
-    "fields": {
-        "name": "Phí gửi xe T4/2024",
-        "created_date": "2024-04-19T04:16:13.813Z",
-        "updated_date": "2024-04-19T04:16:13.813Z",
-        "active": true,
-        "resident": [
-            "resident3"
-        ],
-        "amount": "1478928.37"
-    }
-},
-{
-    "model": "apartment.payment",
-    "pk": 11,
-    "fields": {
-        "name": "Phí gửi xe T4/2024",
-        "created_date": "2024-04-19T04:16:38.727Z",
-        "updated_date": "2024-04-19T04:16:38.727Z",
-        "active": true,
-        "resident": [
-            "resident7"
-        ],
-        "amount": "1478928.37"
-    }
-},
-{
-    "model": "apartment.payment",
-    "pk": 12,
-    "fields": {
-        "name": "Phí gửi xe T4/2024",
-        "created_date": "2024-04-19T04:17:04.602Z",
-        "updated_date": "2024-04-19T04:23:42.757Z",
-        "active": false,
-        "resident": [
-            "resident6"
-        ],
-        "amount": "1478928.37"
-    }
-},
-{
-    "model": "apartment.payment",
-    "pk": 13,
+    "pk": 9,
     "fields": {
         "name": "Tiền nước T4/2024",
         "created_date": "2024-04-19T13:20:27.978Z",
         "updated_date": "2024-04-19T13:20:27.978Z",
-        "active": true,
+        "active": false,
         "resident": [
             "resident1"
         ],
@@ -887,13 +892,13 @@
     "model": "apartment.receipt",
     "pk": 1,
     "fields": {
-        "name": "Hóa đơn Phí gửi xe T4/2024",
+        "name": "Hóa đơn Phí gửi xe máy tháng",
         "created_date": "2024-04-19T04:23:42.757Z",
         "updated_date": "2024-04-19T04:23:42.757Z",
-        "amount": "1478928.37",
-        "payment": 12,
+        "amount": "200000.00",
+        "payment": 9,
         "resident": [
-            "resident6"
+            "resident1"
         ]
     }
 },
@@ -952,7 +957,8 @@
             "resident8"
         ],
         "name_register": "Người thân cư dân 8",
-        "vehicle_number": "88BC-89123"
+        "vehicle_number": "88BC-89123",
+        "type_vehicle": "bike"
     }
 },
 {
@@ -967,7 +973,8 @@
             "resident3"
         ],
         "name_register": "Người thân cư dân 3",
-        "vehicle_number": "33BC-34567"
+        "vehicle_number": "33BC-34567",
+        "type_vehicle": "motorbike"
     }
 },
 {
@@ -982,7 +989,8 @@
             "resident7"
         ],
         "name_register": "Người thân cư dân 7",
-        "vehicle_number": "77BC-789456"
+        "vehicle_number": "77BC-789456",
+        "type_vehicle": "car"
     }
 },
 {
@@ -991,13 +999,30 @@
     "fields": {
         "name": "Thẻ giữ xe",
         "created_date": "2024-04-19T04:23:03.110Z",
-        "updated_date": "2024-04-19T04:23:03.110Z",
+        "updated_date": "2024-05-16T14:42:30.019Z",
         "active": true,
         "resident": [
             "resident6"
         ],
         "name_register": "Người thân cư dân 6",
-        "vehicle_number": "66BC-612346"
+        "vehicle_number": "12B2-92138",
+        "type_vehicle": "motorbike"
+    }
+},
+{
+    "model": "apartment.securitycard",
+    "pk": 5,
+    "fields": {
+        "name": "Thẻ giữ xe",
+        "created_date": "2024-05-16T14:39:53.023Z",
+        "updated_date": "2024-05-16T14:39:53.023Z",
+        "active": true,
+        "resident": [
+            "resident5"
+        ],
+        "name_register": "Người thân cư dân 5",
+        "vehicle_number": "49L1-26318",
+        "type_vehicle": "motorbike"
     }
 },
 
@@ -1008,7 +1033,7 @@
         "name": "Đơn Shopee",
         "created_date": "2024-04-19T13:22:53.844Z",
         "updated_date": "2024-04-19T13:25:44.130Z",
-        "active": false,
+        "active": true,
         "resident": [
             "resident1"
         ],
@@ -1068,7 +1093,7 @@
         "name": "Đơn Sendo",
         "created_date": "2024-04-19T13:24:02.461Z",
         "updated_date": "2024-04-19T13:26:07.620Z",
-        "active": false,
+        "active": true,
         "resident": [
             "resident5"
         ],
@@ -1082,7 +1107,7 @@
     "fields": {
         "name": "Đơn ChoTot",
         "created_date": "2024-04-19T13:24:16.129Z",
-        "updated_date": "2024-04-19T13:24:16.129Z",
+        "updated_date": "2024-05-16T14:59:55.634Z",
         "active": true,
         "resident": [
             "resident6"
@@ -1128,24 +1153,9 @@
         "name": "Đơn GHN",
         "created_date": "2024-04-19T13:24:47.617Z",
         "updated_date": "2024-04-19T13:26:12.812Z",
-        "active": false,
-        "resident": [
-            "resident9"
-        ],
-        "note": "Quần áo",
-        "image": "image/upload/v1713532852/eo0fsvrsmadbpdem49ja.jpg"
-    }
-},
-{
-    "model": "apartment.package",
-    "pk": 10,
-    "fields": {
-        "name": "Đơn GHTK",
-        "created_date": "2024-04-19T13:25:01.200Z",
-        "updated_date": "2024-04-19T13:25:01.200Z",
         "active": true,
         "resident": [
-            "resident1"
+            "resident9"
         ],
         "note": "Quần áo",
         "image": "image/upload/v1713532852/eo0fsvrsmadbpdem49ja.jpg"
@@ -1159,12 +1169,12 @@
         "name": "Vấn đề an ninh",
         "created_date": "2024-04-19T13:28:56.170Z",
         "updated_date": "2024-04-19T13:32:59.940Z",
-        "active": false,
+        "active": true,
         "resident": [
             "resident1"
         ],
         "content": "Mất trật tự",
-        "image": ""
+        "image": "image/upload/v1715874992/xqpdvsnzwrig9ijctepi.png"
     }
 },
 {
@@ -1173,13 +1183,13 @@
     "fields": {
         "name": "Vấn đề vệ sinh",
         "created_date": "2024-04-19T13:29:50.971Z",
-        "updated_date": "2024-04-19T13:29:50.971Z",
+        "updated_date": "2024-05-16T13:09:50.237Z",
         "active": true,
         "resident": [
             "resident2"
         ],
-        "content": "Không biết để rác ở đâu",
-        "image": ""
+        "content": "Dạo gần đây, chung cư chúng ta rất mất vệ sinh",
+        "image": "image/upload/v1715875107/ravzxqxtycf9tubgugby.jpg"
     }
 },
 
@@ -2884,6 +2894,455 @@
         "survey": 3,
         "question": 11,
         "answer": 60
+    }
+},
+
+{
+    "model": "apartment.notification",
+    "pk": 1,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T03:56:00.227Z",
+        "updated_date": "2024-04-19T03:56:00.227Z",
+        "active": true,
+        "resident": [
+            "resident1"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 2,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T03:58:58.704Z",
+        "updated_date": "2024-04-19T03:58:58.704Z",
+        "active": true,
+        "resident": [
+            "resident2"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 3,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T03:59:59.619Z",
+        "updated_date": "2024-04-19T03:59:59.619Z",
+        "active": true,
+        "resident": [
+            "resident3"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 4,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:00:33.852Z",
+        "updated_date": "2024-04-19T04:00:33.852Z",
+        "active": true,
+        "resident": [
+            "resident4"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 5,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:01:02.273Z",
+        "updated_date": "2024-04-19T04:01:02.273Z",
+        "active": true,
+        "resident": [
+            "resident5"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 6,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:01:33.948Z",
+        "updated_date": "2024-04-19T04:01:33.948Z",
+        "active": true,
+        "resident": [
+            "resident6"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 7,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:01:56.067Z",
+        "updated_date": "2024-04-19T04:01:56.067Z",
+        "active": true,
+        "resident": [
+            "resident7"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 8,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:02:28.289Z",
+        "updated_date": "2024-04-19T04:02:28.289Z",
+        "active": true,
+        "resident": [
+            "resident8"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 9,
+    "fields": {
+        "name": "CẢNH BÁO BẢO MẬT",
+        "created_date": "2024-04-19T04:03:44.073Z",
+        "updated_date": "2024-04-19T04:03:44.073Z",
+        "active": true,
+        "resident": [
+            "resident9"
+        ],
+        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 10,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:07:00.777Z",
+        "updated_date": "2024-04-19T04:07:00.777Z",
+        "active": true,
+        "resident": [
+            "resident1"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 11,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:07:22.908Z",
+        "updated_date": "2024-04-19T04:07:22.908Z",
+        "active": true,
+        "resident": [
+            "resident2"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 12,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:07:53.700Z",
+        "updated_date": "2024-04-19T04:07:53.700Z",
+        "active": true,
+        "resident": [
+            "resident3"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 13,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:09:03.809Z",
+        "updated_date": "2024-04-19T04:09:03.809Z",
+        "active": true,
+        "resident": [
+            "resident5"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 14,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:09:18.943Z",
+        "updated_date": "2024-04-19T04:09:18.943Z",
+        "active": true,
+        "resident": [
+            "resident1"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 15,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:09:41.631Z",
+        "updated_date": "2024-04-19T04:09:41.631Z",
+        "active": true,
+        "resident": [
+            "resident4"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 16,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:10:09.079Z",
+        "updated_date": "2024-04-19T04:10:09.079Z",
+        "active": true,
+        "resident": [
+            "resident7"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 17,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:13:24.619Z",
+        "updated_date": "2024-04-19T04:13:24.619Z",
+        "active": true,
+        "resident": [
+            "resident9"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 18,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T13:20:27.978Z",
+        "updated_date": "2024-04-19T13:20:27.978Z",
+        "active": true,
+        "resident": [
+            "resident1"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 19,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:18:27.705Z",
+        "updated_date": "2024-04-19T04:18:27.705Z",
+        "active": true,
+        "resident": [
+            "resident8"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 20,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:19:15.039Z",
+        "updated_date": "2024-04-19T04:19:15.039Z",
+        "active": true,
+        "resident": [
+            "resident3"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 21,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:22:31.325Z",
+        "updated_date": "2024-04-19T04:22:31.325Z",
+        "active": true,
+        "resident": [
+            "resident7"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 22,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-04-19T04:23:03.110Z",
+        "updated_date": "2024-04-19T04:23:03.110Z",
+        "active": true,
+        "resident": [
+            "resident6"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 23,
+    "fields": {
+        "name": "THÔNG BÁO THANH TOÁN",
+        "created_date": "2024-05-16T14:39:53.023Z",
+        "updated_date": "2024-05-16T14:39:53.023Z",
+        "active": true,
+        "resident": [
+            "resident5"
+        ],
+        "content": "Bạn có một phiếu thanh toán cần chi trả"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 24,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:22:53.844Z",
+        "updated_date": "2024-04-19T13:22:53.844Z",
+        "active": true,
+        "resident": [
+            "resident1"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 25,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:23:12.255Z",
+        "updated_date": "2024-04-19T13:23:12.255Z",
+        "active": true,
+        "resident": [
+            "resident2"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 26,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:23:33.508Z",
+        "updated_date": "2024-04-19T13:23:33.508Z",
+        "active": true,
+        "resident": [
+            "resident3"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 27,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:23:50.291Z",
+        "updated_date": "2024-04-19T13:23:50.291Z",
+        "active": true,
+        "resident": [
+            "resident4"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 28,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:24:02.461Z",
+        "updated_date": "2024-04-19T13:24:02.461Z",
+        "active": true,
+        "resident": [
+            "resident5"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 29,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:24:16.129Z",
+        "updated_date": "2024-04-19T13:24:16.129Z",
+        "active": true,
+        "resident": [
+            "resident6"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 30,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:24:29.851Z",
+        "updated_date": "2024-04-19T13:24:29.851Z",
+        "active": true,
+        "resident": [
+            "resident7"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 31,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:24:38.393Z",
+        "updated_date": "2024-04-19T13:24:38.393Z",
+        "active": true,
+        "resident": [
+            "resident8"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+    }
+},
+{
+    "model": "apartment.notification",
+    "pk": 32,
+    "fields": {
+        "name": "THÔNG BÁO TỦ ĐỒ",
+        "created_date": "2024-04-19T13:24:47.617Z",
+        "updated_date": "2024-04-19T13:24:47.617Z",
+        "active": true,
+        "resident": [
+            "resident9"
+        ],
+        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
     }
 }
 ]

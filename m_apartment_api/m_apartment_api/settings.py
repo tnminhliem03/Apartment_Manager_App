@@ -93,17 +93,12 @@ WSGI_APPLICATION = 'm_apartment_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'apartment_manager_db_test',
         'NAME': 'apartment_manager_db',
         'USER': 'root',
         'PASSWORD': 'Liemkute03',
         'HOST': ''  # mặc định localhost
     }
 }
-
-# db test
-# CLIENT_ID = '8IdgCaXvlMMtgDwPdgygH1aVzeJL55bCEGqRrLBu'
-# CLIENT_SECRET = 'JYOGVV7TITmzD0synPyFcvbjIJmi5cExuKrzqYXBTmUjCXC3F8tZgHCYa6XVFSppPSzo7Y9XUPBsnb4XJhwMTO4w1PMdfKrnC4COtjXfAeGOKtWjkEedY4Nlwrcw8SfQ'
 
 import cloudinary
 
@@ -152,5 +147,18 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CLIENT_ID = 'tCpP0wb3ZcRJSBiLkh4tPPid3OHLhrdHx1Az3N15'
-CLIENT_SECRET = 'rsOS1sjXbxt4YltysKi78F0Mm4NbZHVMzRiC46PlCKdmmROwRvKZNpU5w9NAzDBElmw9qeePGIrgWwnnfmIGGvRIBs9BCPu8YLUQWgy8f5I2hrPMaL0yDCJBW6JWhL6e'
+# Local
+CLIENT_ID = 'BimeGdIrxuyijzRMdV4jv8OUbx9gStE8ZmmpwGtz'
+CLIENT_SECRET = 'bfQ7wgupB7zhLmAflGhQbxLfzT2LgrPH0T1KAbQr41ji5vpKD01LbEToHgkBWf49CeckVgrxBv8tiiCTBeZfrmQC9Hn0ceubISDYydMnh3bQcD08uFp1tWXoyW0SDoWC'
+
+# Pythonanywhere
+CLIENT_ID = 'ZggMjPy3cGKKQT6ms9GSTJIhAfbAsm87R1LTJyOq'
+CLIENT_SECRET = 'guESXoGydjlz9hTuVHaoahwfFBv98laD7kVhcNcBdgfy3HKMCdzjxEImrowaDt9J5o9I0nK3dVaSlulgnQLDSRiyETzAiDCjOsYNFcsdL4q2p0HciD6NN67sqdFxQxdW'
+# OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
+
+# vnpay
+VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config
+VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
+VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
+VNPAY_TMN_CODE = 'BBJDENSU'  # Website ID in VNPAY System, get from config
+VNPAY_HASH_SECRET_KEY = '1S8CJ30B6CNNK2G4I2A0GJ6RYKEQN966'  # Secret key for create checksum,get from config

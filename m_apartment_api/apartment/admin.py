@@ -1,16 +1,19 @@
+import site
+
 from django.contrib import admin
 from django import forms
+from django.contrib.auth.admin import GroupAdmin
+from django.contrib.auth.models import Group, Permission
 from django.db.models import Count
 from django.template.response import TemplateResponse
 from django.urls import path
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.utils.safestring import mark_safe
-
 from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint,
-                              Survey, QuestionSurvey, AnswerSurvey, ResultSurvey)
+                              Survey, QuestionSurvey, AnswerSurvey, ResultSurvey, Notification)
 
 class MyApartmentAdminSite(admin.AdminSite):
-    site_header = 'Apartment Administation'
+    site_header = 'HỆ THỐNG QUẢN LÝ CHUNG CƯ'
 
     def get_urls(self):
         return [path('survey-stats/', self.stats_view)] + super().get_urls()
@@ -32,7 +35,6 @@ class MyApartmentAdminSite(admin.AdminSite):
         })
 
 
-
 admin_site = MyApartmentAdminSite(name='MyAdmin')
 
 class MyRoomAdmin(admin.ModelAdmin):
@@ -42,9 +44,15 @@ class MyRoomAdmin(admin.ModelAdmin):
     readonly_fields = ['is_empty']
 
 class MyResidentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'username', 'first_name', 'last_name', 'phone', 'room', 'is_active']
+    list_display = ['id', 'username', 'first_name', 'last_name', 'gender', 'phone', 'room', 'is_active']
     list_filter = ['date_joined', 'is_active']
     search_fields = ['username']
+    readonly_fields = ['answered_surveys']
+
+class MyNotificationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'created_date', 'updated_date', 'active', 'resident']
+    search_fields = ['name', 'content']
+    list_filter = ['resident', 'name']
 
 class MyPaymentAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'amount', 'created_date', 'updated_date', 'active', 'resident']
@@ -58,10 +66,9 @@ class MyReceiptAdmin(admin.ModelAdmin):
     readonly_fields = ['name', 'amount', 'payment', 'resident']
 
 class MySecurityCardAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'name_register', 'vehicle_number', 'created_date', 'updated_date',
-                    'active', 'resident']
+    list_display = ['id', 'name', 'name_register', 'vehicle_number', 'type_vehicle', 'created_date',
+                    'updated_date', 'active', 'resident']
     list_filter = ['created_date', 'active', 'resident']
-    readonly_fields = ['name', 'name_register', 'vehicle_number', 'active', 'resident']
 
 class MyPackageAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'note', 'created_date', 'updated_date', 'active', 'resident']
@@ -77,7 +84,7 @@ class ComplaintForm(forms.ModelForm):
 
 class MyComplaintAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'content', 'created_date', 'active', 'resident']
-    readonly_fields = ['content', 'resident']
+    readonly_fields = ['name', 'content', 'resident']
     search_fields = ['name']
     list_filter = ['resident', 'active']
     form = ComplaintForm
@@ -134,5 +141,8 @@ admin_site.register(Package, MyPackageAdmin)
 admin_site.register(Complaint, MyComplaintAdmin)
 admin_site.register(Survey, MySurveyAdmin)
 admin_site.register(QuestionSurvey, MyQuestionSurveyAdmin)
+admin_site.register(Notification, MyNotificationAdmin)
 admin_site.register(AnswerSurvey, MyAnswerSurveyAdmin)
 admin_site.register(ResultSurvey, MyResultSurveyAdmin)
+admin_site.register(Group, GroupAdmin)
+admin_site.register(Permission)

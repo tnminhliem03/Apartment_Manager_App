@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from m_apartment_api import settings
 from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
-                              QuestionSurvey, AnswerSurvey, ResultSurvey)
+                              QuestionSurvey, AnswerSurvey, ResultSurvey, Notification)
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,10 +16,11 @@ class ImageSerializer(serializers.ModelSerializer):
 
         return rep
 
-class RoomSerializer(serializers.ModelSerializer):
+class RoomSerializer(ImageSerializer):
     class Meta:
         model = Room
-        fields = ['id', 'name', 'number', 'image', 'square', 'created_date', 'updated_date', 'is_empty']
+        fields = ['id', 'name', 'number', 'description', 'image', 'square', 'created_date',
+                  'updated_date', 'is_empty']
 
 class ResidentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
@@ -38,7 +39,8 @@ class ResidentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Resident
-        fields = ['id', 'username', 'first_name', 'last_name', 'password', 'email', 'phone', 'avatar', 'room']
+        fields = ['id', 'username', 'first_name', 'last_name', 'password', 'birthday', 'gender', 'email',
+                  'phone', 'avatar', 'room']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -58,7 +60,12 @@ class ReceiptSerializer(serializers.ModelSerializer):
 class SecurityCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = SecurityCard
-        fields = BaseSerializer.Meta.fields + ['name_register', 'vehicle_number']
+        fields = BaseSerializer.Meta.fields + ['name_register', 'vehicle_number', 'type_vehicle']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = BaseSerializer.Meta.fields + ['content']
 
 class PackageSerializer(ImageSerializer):
     class Meta:

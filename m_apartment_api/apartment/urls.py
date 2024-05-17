@@ -12,11 +12,19 @@ r.register('security_cards', views.SecurityCardViewSet, basename='security_cards
 r.register('packages', views.PackageViewSet, basename='packages')
 r.register('complaints', views.ComplaintViewSet, basename='complaints')
 r.register('surveys', views.SurveyViewSet, basename='surveys')
-r.register('s_questions', views.QuestionSurveyViewSet, basename='s_questions')
-r.register('s_answers', views.AnswerSurveyViewSet, basename='s_answers')
-r.register('s_results', views.ResultSurveyViewSet, basename='s_results')
-
+r.register('survey_questions', views.QuestionSurveyViewSet, basename='questions')
+r.register('survey_answers', views.AnswerSurveyViewSet, basename='answers')
+r.register('survey_results', views.ResultSurveyViewSet, basename='results')
+r.register('notifications', views.NotificationViewSet, basename='notifs')
 
 urlpatterns = [
-    path('', include(r.urls))
+    path('', include(r.urls)),
+    # vn pay
+    path('pay', views.index, name='index'),
+    path('payment', views.payment, name='payment'),
+    path('payment_ipn', views.payment_ipn, name='payment_ipn'),
+    path('payment_return', views.payment_return, name='payment_return'),
+    path('query', views.query, name='query'),
+    path('refund', views.refund, name='refund'),
+    # path('admin/', admin.site.urls),
 ]

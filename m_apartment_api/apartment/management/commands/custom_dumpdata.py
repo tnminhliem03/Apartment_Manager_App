@@ -7,7 +7,7 @@ from apartment.models import User, Resident
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        output_filename = 'all_data.json'
+        output_filename = 'data.json'
 
         with codecs.open(output_filename, 'w', 'utf-8') as f:
             original_stdout = sys.stdout
