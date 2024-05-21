@@ -4,7 +4,7 @@ from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
-from vnpay.utils import VnPay
+# from vnpay.utils import VnPay
 
 from apartment import serializers, paginators, perms
 from django.contrib.auth.hashers import make_password
