@@ -62,8 +62,9 @@ class SecurityCard(ItemModel):
     vehicle_choices = [('bike', 'Xe đạp'), ('motorbike', 'Xe máy'), ('car', 'Xe hơi')]
     type_vehicle = models.CharField(max_length=20, choices=vehicle_choices, null=True)
 
-class Notification(ItemModel):
+class Notification(BaseModel):
     content = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
 
 class Package(ItemModel):
     note = models.CharField(max_length=255)

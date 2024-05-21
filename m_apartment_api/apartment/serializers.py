@@ -65,7 +65,7 @@ class SecurityCardSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = BaseSerializer.Meta.fields + ['content']
+        fields = ['id', 'name', 'created_date', 'updated_date', 'content']
 
 class PackageSerializer(ImageSerializer):
     class Meta:

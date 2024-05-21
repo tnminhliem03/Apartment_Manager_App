@@ -94,6 +94,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'apartment_manager_db',
+        # 'NAME': 'apartment_manager_db_test',
         'USER': 'root',
         'PASSWORD': 'Liemkute03',
         'HOST': ''  # mặc định localhost

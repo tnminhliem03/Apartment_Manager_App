@@ -4,6 +4,8 @@ from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
+from vnpay.utils import VnPay
+
 from apartment import serializers, paginators, perms
 from django.contrib.auth.hashers import make_password
 from apartment.models import (Resident, Room, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
@@ -19,7 +21,7 @@ import random
 import requests
 from datetime import datetime
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.utils.http import unquote
 from apartment.vnpay import vnpay
@@ -122,7 +124,8 @@ def payment_ipn(request):
 
 
 def payment_return(request):
-    inputData = request.GET
+    # inputData = request.GET
+    inputData = request.POST
     if inputData:
         vnp = vnpay()
         vnp.responseData = inputData.dict()
@@ -138,6 +141,12 @@ def payment_return(request):
 
         if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
             if vnp_ResponseCode == "00":
+                # return JsonResponse({"title": "Kết quả thanh toán",
+                #                                                "result": "Thành công", "order_id": order_id,
+                #                                                "amount": amount,
+                #                                                "order_desc": order_desc,
+                #                                                "vnp_TransactionNo": vnp_TransactionNo,
+                #                                                "vnp_ResponseCode": vnp_ResponseCode})
                 return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
                                                                "result": "Thành công", "order_id": order_id,
                                                                "amount": amount,
@@ -145,6 +154,12 @@ def payment_return(request):
                                                                "vnp_TransactionNo": vnp_TransactionNo,
                                                                "vnp_ResponseCode": vnp_ResponseCode})
             else:
+                # return JsonResponse({"title": "Kết quả thanh toán",
+                #                                                "result": "Lỗi", "order_id": order_id,
+                #                                                "amount": amount,
+                #                                                "order_desc": order_desc,
+                #                                                "vnp_TransactionNo": vnp_TransactionNo,
+                #                                                "vnp_ResponseCode": vnp_ResponseCode})
                 return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
                                                                "result": "Lỗi", "order_id": order_id,
                                                                "amount": amount,
@@ -152,6 +167,9 @@ def payment_return(request):
                                                                "vnp_TransactionNo": vnp_TransactionNo,
                                                                "vnp_ResponseCode": vnp_ResponseCode})
         else:
+            # return JsonResponse({"title": "Kết quả thanh toán", "result": "Lỗi", "order_id": order_id, "amount": amount,
+            #                "order_desc": order_desc, "vnp_TransactionNo": vnp_TransactionNo,
+            #                "vnp_ResponseCode": vnp_ResponseCode, "msg": "Sai checksum"})
             return render(request, "payment/payment_return.html",
                           {"title": "Kết quả thanh toán", "result": "Lỗi", "order_id": order_id, "amount": amount,
                            "order_desc": order_desc, "vnp_TransactionNo": vnp_TransactionNo,
@@ -293,42 +311,42 @@ def type_vehicle_create_pay(obj):
         create_payment('Phí gửi xe hơi tháng', '1600000', obj.resident.id)
 
 
-@receiver(post_save, sender=SecurityCard)
-def add_pay_on_create_sc(sender, instance, created, **kwargs):
-    if created:
-        type_vehicle_create_pay(instance)
-        # if instance.type_vehicle == 'bike':
-        #     create_payment('Phí gửi xe đạp tháng', '900000', instance.resident.id)
-        # elif instance.type_vehicle == 'motorbike':
-        #     create_payment('Phí gửi xe máy tháng', '150000', instance.resident.id)
-        # elif instance.type_vehicle == 'car':
-        #     create_payment('Phí gửi xe hơi tháng', '1600000', instance.resident.id)
-
-def create_notif(name, content, resident_id):
-    Notification.objects.create(name=name, content=content, resident_id=resident_id)
-
-@receiver(post_save, sender=Package)
-@receiver(post_save, sender=Payment)
-def add_notif_on_created(sender, instance, created, **kwargs):
-    if created:
-        if isinstance(instance, Payment):
-            create_notif('THÔNG BÁO THANH TOÁN','Bạn có một phiếu thanh toán cần chi trả',
-                         instance.resident.id)
-        elif isinstance(instance, Package):
-            create_notif('THÔNG BÁO TỦ ĐỒ', 'Bạn có một món hàng trong tủ đồ cần nhận',
-                         instance.resident.id)
-
-@receiver(post_save, sender=Resident)
-@receiver(post_save, sender=Complaint)
-def add_notif_on_changed(sender, instance, **kwargs):
-    if isinstance(instance, Complaint):
-        if instance.active == 0:
-            create_notif('XỬ LÝ PHẢN ÁNH', 'Phản ảnh của bạn đã được giải quyết',
-                         instance.resident.id)
-    elif isinstance(instance, Resident):
-        if check_password('123456', instance.password) or instance.password == '123456':
-            create_notif('CẢNH BÁO BẢO MẬT', 'Vui lòng thay đổi mật khẩu và cập nhật'
-                                             ' ảnh đại diện', instance.id)
+# @receiver(post_save, sender=SecurityCard)
+# def add_pay_on_create_sc(sender, instance, created, **kwargs):
+#     if created:
+#         type_vehicle_create_pay(instance)
+#         # if instance.type_vehicle == 'bike':
+#         #     create_payment('Phí gửi xe đạp tháng', '900000', instance.resident.id)
+#         # elif instance.type_vehicle == 'motorbike':
+#         #     create_payment('Phí gửi xe máy tháng', '150000', instance.resident.id)
+#         # elif instance.type_vehicle == 'car':
+#         #     create_payment('Phí gửi xe hơi tháng', '1600000', instance.resident.id)
+#
+# def create_notif(name, content, resident_id):
+#     Notification.objects.create(name=name, content=content, resident_id=resident_id)
+#
+# @receiver(post_save, sender=Package)
+# @receiver(post_save, sender=Payment)
+# def add_notif_on_created(sender, instance, created, **kwargs):
+#     if created:
+#         if isinstance(instance, Payment):
+#             create_notif('THÔNG BÁO THANH TOÁN','Bạn có một phiếu thanh toán cần chi trả',
+#                          instance.resident.id)
+#         elif isinstance(instance, Package):
+#             create_notif('THÔNG BÁO TỦ ĐỒ', 'Bạn có một món hàng trong tủ đồ cần nhận',
+#                          instance.resident.id)
+#
+# @receiver(post_save, sender=Resident)
+# @receiver(post_save, sender=Complaint)
+# def add_notif_on_changed(sender, instance, **kwargs):
+#     if isinstance(instance, Complaint):
+#         if instance.active == 0:
+#             create_notif('XỬ LÝ PHẢN ÁNH', 'Phản ảnh của bạn đã được giải quyết',
+#                          instance.resident.id)
+#     elif isinstance(instance, Resident):
+#         if check_password('123456', instance.password) or instance.password == '123456':
+#             create_notif('CẢNH BÁO BẢO MẬT', 'Vui lòng thay đổi mật khẩu và cập nhật'
+#                                              ' ảnh đại diện', instance.id)
 
 class RoomViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Room.objects.all()
@@ -478,6 +496,133 @@ class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
             return Response({"error": "Hóa đơn đã được thanh toán"})
 
         return Response(serializers.PaymentSerializer(pay).data)
+
+    # @staticmethod
+    # def update(pay):
+    #     transaction_data = {
+    #         'order_id': '1',
+    #         'amount': '12345',
+    #         'order_desc': 'acb',
+    #         'order_type': '250000',
+    #         'language': 'VN',
+    #         'bank_code': 'VNBANK'
+    #     }
+    #
+    #     response = requests.post('https://sandbox.vnpayment.vn/merchantv2/Home/Dashboard.htm', data=transaction_data)
+    #
+    #     if response.status_code == 200:
+    #         print("Cập nhật giao dịch thành công trên trang quản lý giao dịch của VNPAY")
+    #     else:
+    #         print("Cập nhật giao dịch không thành công. Mã lỗi:", response.status_code)
+
+    # def update(order_id, amount, order_desc, vnp_TransactionNo, vnp_ResponseCode):
+    #     # Tạo dữ liệu giao dịch cần cập nhật
+    #     transaction_data = {
+    #         'order_id': order_id,
+    #         'amount': amount,
+    #         'order_desc': order_desc,
+    #         'vnp_TransactionNo': vnp_TransactionNo,
+    #         'vnp_ResponseCode': vnp_ResponseCode
+    #     }
+    #
+    #     login_data = {
+    #         'vnp_TmnCode': 'BBJDENSU',
+    #         'vnp_HashSecret': '1S8CJ30B6CNNK2G4I2A0GJ6RYKEQN966',
+    #         'email': 'trannguyenminhliem181203@gmail.com',
+    #         'password': 'Liemkute03'
+    #     }
+    #     login_url = 'https://sandbox.vnpayment.vn/merchantv2/Users/Login.htm?ReturnUrl=%2fmerchantv2%2fUsers%2fLogout.htm'
+    #     # login_url = 'https://sandbox.vnpayment.vn/login'
+    #     with requests.Session() as session:
+    #         login_response = session.post(login_url, data=login_data)
+    #
+    #         if login_response.status_code == 200:
+    #             print("Đăng nhập thành công!")
+    #
+    #             # Tiếp tục gửi các yêu cầu khác trong phiên đăng nhập
+    #             # Ví dụ: gửi yêu cầu cập nhật giao dịch
+    #             response = session.post('https://sandbox.vnpayment.vn/merchantv2/Home/Dashboard.htm',
+    #                                     data=transaction_data)
+    #             # print(response.text)  # In ra phản hồi từ trang web
+    #         else:
+    #             print("Đăng nhập thất bại!")
+    #
+    #     # Gửi yêu cầu cập nhật giao dịch đến API của VNPAY
+    #     response = requests.post('https://sandbox.vnpayment.vn/merchantv2/Home/Dashboard.htm', data=transaction_data)
+    #
+    #     print(response)
+    #     # Kiểm tra kết quả của yêu cầu cập nhật giao dịch
+    #     if response.status_code == 200:
+    #         # Nếu thành công, in ra thông báo
+    #         print("Cập nhật giao dịch thành công trên trang quản lý giao dịch của VNPAY")
+    #         return True
+    #     else:
+    #         # Nếu không thành công, in ra mã lỗi và trả về False
+    #         print("Cập nhật giao dịch không thành công. Mã lỗi:", response.status_code)
+    #         return False
+    #
+    # @action(methods=['post'], url_path='vnpay', detail=True)
+    # def paid_vnpay(self, request, pk):
+    #     pay = self.get_object()
+    #     amount_vnpay = pay.amount
+    #     payment_id = pay.id
+    #
+    #     # order_id = inputData['vnp_TxnRef']
+    #     # amount = int(inputData['vnp_Amount']) / 100
+    #     # order_desc = inputData['vnp_OrderInfo']
+    #     # vnp_TransactionNo = inputData['vnp_TransactionNo']
+    #     # vnp_ResponseCode = inputData['vnp_ResponseCode']
+    #     # vnp_TmnCode = inputData['vnp_TmnCode']
+    #     # vnp_PayDate = inputData['vnp_PayDate']
+    #     # vnp_BankCode = inputData['vnp_BankCode']
+    #     # vnp_CardType = inputData['vnp_CardType']
+    #
+    #     order_id = '123'
+    #     amount = '3456'
+    #     order_desc = request.data.get('order_desc')
+    #     vnp_TransactionNo = request.data.get('vnp_TransactionNo')
+    #     vnp_ResponseCode = request.data.get('vnp_ResponseCode')
+    #
+    #     payment_result = payment_return(request)
+    #     if payment_result is not None:
+    #         # Nếu thanh toán thành công
+    #         if payment_result.status_code == 200:
+    #             # Cập nhật giao dịch trên trang quản lý giao dịch của VNPAY
+    #             update_transaction_success = self.update(order_id, amount, order_desc, vnp_TransactionNo, vnp_ResponseCode)
+    #             if update_transaction_success:
+    #                 return Response("Thanh toán thành công và cập nhật giao dịch thành công", status=status.HTTP_200_OK)
+    #             else:
+    #                 return Response("Có lỗi xảy ra khi cập nhật giao dịch",
+    #                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #         else:
+    #             # Xử lý khi thanh toán không thành công
+    #             return Response("Thanh toán không thành công", status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         # Xử lý khi có lỗi xảy ra trong quá trình gửi thanh toán
+    #         return Response("Có lỗi xảy ra khi gửi thanh toán", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # test_request = HttpRequest()
+        # test_request.method = 'POST'
+        # test_request.POST['order_id'] = '1'
+        # test_request.POST['amount'] = '12345'
+        # test_request.POST['order_desc'] = 'acb'
+        # test_request.POST['order_type'] = '250000'
+        # test_request.POST['language'] = 'VN'
+        # test_request.POST['bank_code'] = 'VNBANK'
+
+        # payment_result = payment_return(test_request)
+        # print(payment_result.status_code)
+        #
+        # if payment_result is not None:
+        #     # Nếu thanh toán thành công, cập nhật giao dịch trên trang quản lý giao dịch của VNPAY
+        #     if payment_result.status_code == 200:
+        #         self.update(pay)
+        #         return Response(payment_result, status=status.HTTP_200_OK)
+        #     else:
+        #         return Response("Thanh toán không thành công", status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response("Có lỗi xảy ra khi gửi thanh toán", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Receipt.objects.all()

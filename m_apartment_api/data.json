@@ -2901,448 +2901,352 @@
     "model": "apartment.notification",
     "pk": 1,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Lịch cắt điện T3/2024",
         "created_date": "2024-04-19T03:56:00.227Z",
         "updated_date": "2024-04-19T03:56:00.227Z",
         "active": true,
-        "resident": [
-            "resident1"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Cư dân chú ý: Ngày 22/03, từ 8h-12h, toàn bộ chung cư sẽ cắt điện để sửa chữa"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 2,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Lịch sửa chữa thang máy T4/2024",
         "created_date": "2024-04-19T03:58:58.704Z",
         "updated_date": "2024-04-19T03:58:58.704Z",
         "active": true,
-        "resident": [
-            "resident2"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Cư dân chú ý: Từ ngày 05/04 - 08/04, toàn bộ thang máy sẽ dừng hoạt động vào lúc 2h-6h mỗi ngày"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 3,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Cuộc họp giữa ban quản lý và cư dân T4/2024",
         "created_date": "2024-04-19T03:59:59.619Z",
         "updated_date": "2024-04-19T03:59:59.619Z",
         "active": true,
-        "resident": [
-            "resident3"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Vào ngày 15/04, ban quản lý sẽ tổ chức cuộc họp với cư dân vào lúc 19h tại phòng sinh hoạt chung của chung cư"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 4,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Tăng cường bảo vệ an ninh trong khu vực",
         "created_date": "2024-04-19T04:00:33.852Z",
         "updated_date": "2024-04-19T04:00:33.852Z",
         "active": true,
-        "resident": [
-            "resident4"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Bổ sung thêm 2 bảo vệ tuần tra từ 22h-6h"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 5,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Dịch vụ vệ sinh định kỳ vào ngày chủ nhật",
         "created_date": "2024-04-19T04:01:02.273Z",
         "updated_date": "2024-04-19T04:01:02.273Z",
         "active": true,
-        "resident": [
-            "resident5"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Vệ sinh toàn bộ khu vực chung"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 6,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Chương trình thiện nguyện giúp đỡ trẻ em vào ngày 01/06",
         "created_date": "2024-04-19T04:01:33.948Z",
         "updated_date": "2024-04-19T04:01:33.948Z",
         "active": true,
-        "resident": [
-            "resident6"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Với châm ngôn \"Cũ ta mới người\", ban quản lý chung cư tổ chức hoạt động thiện nguyện với nội dung quyên góp sách vở, quần áo, đồ chung và đồ chơi cũ"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 7,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Tổ chức hội chợ hàng hóa",
         "created_date": "2024-04-19T04:01:56.067Z",
         "updated_date": "2024-04-19T04:01:56.067Z",
         "active": true,
-        "resident": [
-            "resident7"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Hội chợ mở cửa từ 8h-18h ngày 03/05 tại khu vực sân chơi của chung cư"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 8,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Tập huấn phòng cháy chữa cháy ngày 15/5",
         "created_date": "2024-04-19T04:02:28.289Z",
         "updated_date": "2024-04-19T04:02:28.289Z",
         "active": true,
-        "resident": [
-            "resident8"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Tập huấn tại khu vực nhà để xe từ 9h-11h"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 9,
     "fields": {
-        "name": "CẢNH BÁO BẢO MẬT",
+        "name": "Chỉnh trang cảnh quan sân vườn",
         "created_date": "2024-04-19T04:03:44.073Z",
         "updated_date": "2024-04-19T04:03:44.073Z",
         "active": true,
-        "resident": [
-            "resident9"
-        ],
-        "content": "Vui lòng thay đổi mật khẩu và cập nhật ảnh đại diện"
+        "content": "Bắt đầu từ ngày 20/05, kéo dài trong 1 tuần"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 10,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Cập nhật thông tin liên hệ cư dân",
         "created_date": "2024-04-19T04:07:00.777Z",
         "updated_date": "2024-04-19T04:07:00.777Z",
         "active": true,
-        "resident": [
-            "resident1"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Liên hệ ban quản lý để cập nhật"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 11,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thực hiện khảo sát định kì T1/2024 ",
         "created_date": "2024-04-19T04:07:22.908Z",
         "updated_date": "2024-04-19T04:07:22.908Z",
         "active": true,
-        "resident": [
-            "resident2"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Cư dân vui lòng thực hiện khảo sát định kì T1/2024 để giúp ban quản lý cải thiện môi trường sống cho cư dân"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 12,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thực hiện khảo sát định kì T2/2024 ",
         "created_date": "2024-04-19T04:07:53.700Z",
         "updated_date": "2024-04-19T04:07:53.700Z",
         "active": true,
-        "resident": [
-            "resident3"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Cư dân vui lòng thực hiện khảo sát định kì T2/2024 để giúp ban quản lý cải thiện môi trường sống cho cư dân"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 13,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thực hiện khảo sát định kì T3/2024 ",
         "created_date": "2024-04-19T04:09:03.809Z",
         "updated_date": "2024-04-19T04:09:03.809Z",
         "active": true,
-        "resident": [
-            "resident5"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Cư dân vui lòng thực hiện khảo sát định kì T3/2024 để giúp ban quản lý cải thiện môi trường sống cho cư dân"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 14,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thực hiện khảo sát định kì T4/2024 ",
         "created_date": "2024-04-19T04:09:18.943Z",
         "updated_date": "2024-04-19T04:09:18.943Z",
         "active": true,
-        "resident": [
-            "resident1"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Cư dân vui lòng thực hiện khảo sát định kì T4/2024 để giúp ban quản lý cải thiện môi trường sống cho cư dân"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 15,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thực hiện an toàn phòng cháy chữa cháy",
         "created_date": "2024-04-19T04:09:41.631Z",
         "updated_date": "2024-04-19T04:09:41.631Z",
         "active": true,
-        "resident": [
-            "resident4"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Xin thông báo về việc kiểm tra hệ thống PCCC vào 17/05, từ 9h-12h trưa"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 16,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Hội nghị cư dân",
         "created_date": "2024-04-19T04:10:09.079Z",
         "updated_date": "2024-04-19T04:10:09.079Z",
         "active": true,
-        "resident": [
-            "resident7"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Đề xuất ý kiến về việc sắp xếp lại lịch trình vệ sinh khu vực chung"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 17,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Thay đổi hệ thông cửa",
         "created_date": "2024-04-19T04:13:24.619Z",
         "updated_date": "2024-04-19T04:13:24.619Z",
         "active": true,
-        "resident": [
-            "resident9"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Thông báo về việc thay đổi hệ thống cửa chính vào ngày 25/05"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 18,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Giám sát trẻ em",
         "created_date": "2024-04-19T13:20:27.978Z",
         "updated_date": "2024-04-19T13:20:27.978Z",
         "active": true,
-        "resident": [
-            "resident1"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Lưu ý: Trẻ em dưới 12 tuổi phải được người lớn giám sát khi sử dụng cơ sở vật chất chung"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 19,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Tình nguyện dọn dẹp",
         "created_date": "2024-04-19T04:18:27.705Z",
         "updated_date": "2024-04-19T04:18:27.705Z",
         "active": true,
-        "resident": [
-            "resident8"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Thông báo về việc tổ chức chương trình tình nguyện làm sạch khu vực xung quanh chung cư vào ngày 27/05"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 20,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Quá tải điện",
         "created_date": "2024-04-19T04:19:15.039Z",
         "updated_date": "2024-04-19T04:19:15.039Z",
         "active": true,
-        "resident": [
-            "resident3"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Lưu ý: Vui lòng tắt đèn và điều chỉnh nhiệt độ máy lạnh khi không sử dụng để tiết kiệm năng lượng"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 21,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Điều chỉnh lịch vệ sinh",
         "created_date": "2024-04-19T04:22:31.325Z",
         "updated_date": "2024-04-19T04:22:31.325Z",
         "active": true,
-        "resident": [
-            "resident7"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Lịch trình vệ sinh hồ bơi đã được điều chỉnh, vui lòng kiểm tra để biết thêm thông tin chi tiết"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 22,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Nhắc nhở bãi xe",
         "created_date": "2024-04-19T04:23:03.110Z",
         "updated_date": "2024-04-19T04:23:03.110Z",
         "active": true,
-        "resident": [
-            "resident6"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Lưu ý: Vui lòng không đậu xe trong khu vực cấm đỗ để đảm bảo thông thoáng cho giao thông"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 23,
     "fields": {
-        "name": "THÔNG BÁO THANH TOÁN",
+        "name": "Nâng cấp hệ thống cấp nước",
         "created_date": "2024-05-16T14:39:53.023Z",
         "updated_date": "2024-05-16T14:39:53.023Z",
         "active": true,
-        "resident": [
-            "resident5"
-        ],
-        "content": "Bạn có một phiếu thanh toán cần chi trả"
+        "content": "Thông báo về việc kiểm tra định kỳ và bảo dưỡng hệ thống cấp nước, dự kiến sẽ ảnh hưởng đến cung cấp nước trong một số thời gian ngắn"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 24,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Ý thức vệ sinh chung",
         "created_date": "2024-04-19T13:22:53.844Z",
         "updated_date": "2024-04-19T13:22:53.844Z",
         "active": true,
-        "resident": [
-            "resident1"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Mong mọi người giữ vệ sinh khu vực thang máy và tránh việc vứt rác không đúng chỗ"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 25,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Điều chỉnh lịch thu gom rác",
         "created_date": "2024-04-19T13:23:12.255Z",
         "updated_date": "2024-04-19T13:23:12.255Z",
         "active": true,
-        "resident": [
-            "resident2"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Lịch trình thu gom rác sẽ có điều chỉnh vào ngày 27/05 do lễ lớn diễn ra tại khu vực sảnh chung cư, xin mọi người thông cảm"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 26,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Nâng cấp cơ sở vật chất",
         "created_date": "2024-04-19T13:23:33.508Z",
         "updated_date": "2024-04-19T13:23:33.508Z",
         "active": true,
-        "resident": [
-            "resident3"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Thông báo về việc sửa chữa cơ sở vật chất phòng sinh hoạt cộng đồng, mong mọi người thông cảm với sự bất tiện trong thời gian này"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 27,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Chuyên đề phòng chống tệ nạn xã hội",
         "created_date": "2024-04-19T13:23:50.291Z",
         "updated_date": "2024-04-19T13:23:50.291Z",
         "active": true,
-        "resident": [
-            "resident4"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Chuyên đề sẽ diễn ra vào chủ nhật 9h ngày 11/05, kính mong cư dân tham gia để nâng cao ý thức"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 28,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Chuyên đề phòng chống tội phạm công nghệ cao",
         "created_date": "2024-04-19T13:24:02.461Z",
         "updated_date": "2024-04-19T13:24:02.461Z",
         "active": true,
-        "resident": [
-            "resident5"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Chuyên đề sẽ diễn ra vào chủ nhật 9h ngày 17/05, kính mong cư dân tham gia để nâng cao ý thức"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 29,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Nâng cấp hệ thống thoát nước",
         "created_date": "2024-04-19T13:24:16.129Z",
         "updated_date": "2024-04-19T13:24:16.129Z",
         "active": true,
-        "resident": [
-            "resident6"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Thông báo về việc sửa chữa hệ thống thoát nước trong khu vực, có thể ảnh hưởng đến việc sử dụng nước trong một số thời gian ngắn"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 30,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Tổ chức cuộc họp đặc biệt",
         "created_date": "2024-04-19T13:24:29.851Z",
         "updated_date": "2024-04-19T13:24:29.851Z",
         "active": true,
-        "resident": [
-            "resident7"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Cuộc họp đặc biệt về việc xây dựng phương án ứng phó với tình hình khẩn cấp sẽ được tổ chức vào tuần tới, mọi cư dân đều được mời tham dự"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 31,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Cải thiện an ninh",
         "created_date": "2024-04-19T13:24:38.393Z",
         "updated_date": "2024-04-19T13:24:38.393Z",
         "active": true,
-        "resident": [
-            "resident8"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Xin thông báo về việc kiểm tra an ninh hệ thống camera quan sát vào ngày mai, có thể ảnh hưởng đến việc ghi lại hình ảnh trong một số thời gian ngắn"
     }
 },
 {
     "model": "apartment.notification",
     "pk": 32,
     "fields": {
-        "name": "THÔNG BÁO TỦ ĐỒ",
+        "name": "Tổ chức buổi tọa đàm",
         "created_date": "2024-04-19T13:24:47.617Z",
         "updated_date": "2024-04-19T13:24:47.617Z",
         "active": true,
-        "resident": [
-            "resident9"
-        ],
-        "content": "Bạn có một món hàng trong tủ đồ cần nhận"
+        "content": "Thông báo về việc tổ chức buổi tọa đàm về kế hoạch phát triển cộng đồng trong năm tới, mọi cư dân đều được mời tham dự và đóng góp ý kiến"
     }
 }
 ]

@@ -50,9 +50,9 @@ class MyResidentAdmin(admin.ModelAdmin):
     readonly_fields = ['answered_surveys']
 
 class MyNotificationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'created_date', 'updated_date', 'active', 'resident']
+    list_display = ['id', 'name', 'created_date', 'updated_date', 'active']
     search_fields = ['name', 'content']
-    list_filter = ['resident', 'name']
+    list_filter = ['name']
 
 class MyPaymentAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'amount', 'created_date', 'updated_date', 'active', 'resident']
