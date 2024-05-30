@@ -24,6 +24,7 @@ SECRET_KEY = 'django-insecure-tj09_a(=wy+7j@oo24#&$5l9494ijpjnumv-cm=2i^h(u-dk=4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ALLOWED_HOSTS = ['tnminhliem03.pythonanywhere.com']
 ALLOWED_HOSTS = []
 
 import pymysql
@@ -94,10 +95,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'apartment_manager_db',
-        # 'NAME': 'apartment_manager_db_test',
         'USER': 'root',
         'PASSWORD': 'Liemkute03',
         'HOST': ''  # mặc định localhost
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'tnminhliem03$apartmentdb',
+        # # 'NAME': 'apartment_manager_db_test',
+        # 'USER': 'tnminhliem03',
+        # 'PASSWORD': 'Liemkute03',
+        # 'HOST': 'tnminhliem03.mysql.pythonanywhere-services.com'  # mặc định localhost
     }
 }
 
@@ -155,7 +161,7 @@ CLIENT_SECRET = 'bfQ7wgupB7zhLmAflGhQbxLfzT2LgrPH0T1KAbQr41ji5vpKD01LbEToHgkBWf4
 # Pythonanywhere
 CLIENT_ID = 'ZggMjPy3cGKKQT6ms9GSTJIhAfbAsm87R1LTJyOq'
 CLIENT_SECRET = 'guESXoGydjlz9hTuVHaoahwfFBv98laD7kVhcNcBdgfy3HKMCdzjxEImrowaDt9J5o9I0nK3dVaSlulgnQLDSRiyETzAiDCjOsYNFcsdL4q2p0HciD6NN67sqdFxQxdW'
-# OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
+OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
 
 # vnpay
 VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config

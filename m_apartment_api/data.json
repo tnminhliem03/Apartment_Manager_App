@@ -2,7 +2,106 @@
 {
     "model": "auth.group",
     "fields": {
-        "name": "Resident"
+        "name": "Resident",
+        "permissions": [
+            [
+                "change_answersurvey",
+                "apartment",
+                "answersurvey"
+            ],
+            [
+                "delete_answersurvey",
+                "apartment",
+                "answersurvey"
+            ],
+            [
+                "view_answersurvey",
+                "apartment",
+                "answersurvey"
+            ],
+            [
+                "add_complaint",
+                "apartment",
+                "complaint"
+            ],
+            [
+                "change_complaint",
+                "apartment",
+                "complaint"
+            ],
+            [
+                "delete_complaint",
+                "apartment",
+                "complaint"
+            ],
+            [
+                "view_complaint",
+                "apartment",
+                "complaint"
+            ],
+            [
+                "view_notification",
+                "apartment",
+                "notification"
+            ],
+            [
+                "view_package",
+                "apartment",
+                "package"
+            ],
+            [
+                "view_payment",
+                "apartment",
+                "payment"
+            ],
+            [
+                "view_questionsurvey",
+                "apartment",
+                "questionsurvey"
+            ],
+            [
+                "view_receipt",
+                "apartment",
+                "receipt"
+            ],
+            [
+                "view_room",
+                "apartment",
+                "room"
+            ],
+            [
+                "add_securitycard",
+                "apartment",
+                "securitycard"
+            ],
+            [
+                "change_securitycard",
+                "apartment",
+                "securitycard"
+            ],
+            [
+                "delete_securitycard",
+                "apartment",
+                "securitycard"
+            ],
+            [
+                "view_securitycard",
+                "apartment",
+                "securitycard"
+            ],
+            [
+                "view_survey",
+                "apartment",
+                "survey"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Admin",
+        "permissions": []
     }
 },
 
@@ -19,7 +118,11 @@
         "is_staff": true,
         "is_active": true,
         "date_joined": "2024-04-19T02:13:59.283Z",
-        "groups": [],
+        "groups": [
+            [
+                "Admin"
+            ]
+        ],
         "user_permissions": []
     }
 },

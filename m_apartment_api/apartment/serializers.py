@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from m_apartment_api import settings
-from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
+from apartment.models import (Room, Resident, User, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
                               QuestionSurvey, AnswerSurvey, ResultSurvey, Notification)
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -21,6 +21,16 @@ class RoomSerializer(ImageSerializer):
         model = Room
         fields = ['id', 'name', 'number', 'description', 'image', 'square', 'created_date',
                   'updated_date', 'is_empty']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resident
+        fields = ['id', 'username', 'first_name', 'last_name', 'password', 'email', 'is_staff']
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
 
 class ResidentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
