@@ -9,8 +9,8 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.utils.safestring import mark_safe
-from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint,
-                              Survey, QuestionSurvey, AnswerSurvey, ResultSurvey, Notification)
+from apartment.models import (Room, Resident, Payment, Receipt, SecurityCard, Package, Complaint, Survey, QuestionSurvey,
+                              AnswerSurvey, ResultSurvey, Notification, MomoLink, MomoPaid, VnpayLink, VnpayPaid)
 
 class MyApartmentAdminSite(admin.AdminSite):
     site_header = 'HỆ THỐNG QUẢN LÝ CHUNG CƯ'
@@ -60,7 +60,7 @@ class MyPaymentAdmin(admin.ModelAdmin):
     list_filter = ['resident', 'active']
 
 class MyReceiptAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'amount', 'created_date', 'payment', 'resident']
+    list_display = ['id', 'order_id', 'pay_type', 'name', 'amount', 'created_date', 'payment', 'resident']
     search_fields = ['name']
     list_filter = ['created_date', 'resident']
     readonly_fields = ['name', 'amount', 'payment', 'resident']
@@ -131,6 +131,22 @@ class MyResultSurveyAdmin(admin.ModelAdmin):
     readonly_fields = ['survey', 'question', 'answer', 'resident']
     list_filter = ['survey', 'resident']
 
+class MyMomoLinkAdmin(admin.ModelAdmin):
+    list_display = ['partner_code', 'order_id', 'amount', 'payment', 'resident', 'pay_url']
+    readonly_fields = ['partner_code', 'order_id', 'amount', 'payment', 'resident', 'pay_url']
+
+class MyMomoPaidAdmin(admin.ModelAdmin):
+    list_display = ['partner_code', 'order_id', 'amount', 'created_date', 'order_type', 'pay_type']
+    readonly_fields = ['partner_code', 'order_id', 'amount', 'created_date', 'order_type', 'pay_type']
+
+class MyVnpayLinkAdmin(admin.ModelAdmin):
+    list_display = ['txn_ref', 'amount', 'created_date', 'payment', 'resident', 'payment_url']
+    readonly_fields = ['txn_ref', 'amount', 'created_date', 'payment', 'resident', 'payment_url']
+
+class MyVnpayPaidAdmin(admin.ModelAdmin):
+    list_display = ['txn_ref', 'amount', 'created_date', 'bank_code', 'card_type']
+    readonly_fields = ['txn_ref', 'amount', 'created_date', 'bank_code', 'card_type']
+
 # Register your models here.
 admin_site.register(Room, MyRoomAdmin)
 admin_site.register(Resident, MyResidentAdmin)
@@ -144,5 +160,9 @@ admin_site.register(QuestionSurvey, MyQuestionSurveyAdmin)
 admin_site.register(Notification, MyNotificationAdmin)
 admin_site.register(AnswerSurvey, MyAnswerSurveyAdmin)
 admin_site.register(ResultSurvey, MyResultSurveyAdmin)
+admin_site.register(MomoLink, MyMomoLinkAdmin)
+admin_site.register(MomoPaid, MyMomoPaidAdmin)
+admin_site.register(VnpayLink, MyVnpayLinkAdmin)
+admin_site.register(VnpayPaid, MyVnpayPaidAdmin)
 admin_site.register(Group, GroupAdmin)
 admin_site.register(Permission)

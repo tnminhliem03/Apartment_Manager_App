@@ -49,10 +49,13 @@ class ItemModel(BaseModel):
         abstract = True
 
 class Payment(ItemModel):
-    amount = models.DecimalField(max_digits=11, decimal_places=2)
+    amount = models.IntegerField()
 
 class Receipt(BaseModel):
-    amount = models.DecimalField(max_digits=11, decimal_places=2)
+    order_id = models.CharField(max_length=255, unique=True, null=True)
+    pay_choices = [('momo', 'MOMO'), ('vnpay', 'VNPAY')]
+    pay_type = models.CharField(max_length=5, choices=pay_choices, null=True)
+    amount = models.IntegerField()
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
 
@@ -103,10 +106,61 @@ class ResultSurvey(models.Model):
 
 # vnpay
 class PaymentForm(forms.Form):
-
     order_id = forms.CharField(max_length=250)
     order_type = forms.CharField(max_length=20)
     amount = forms.IntegerField()
     order_desc = forms.CharField(max_length=100)
     bank_code = forms.CharField(max_length=20, required=False)
     language = forms.CharField(max_length=2)
+
+class MomoWallet(models.Model):
+    partner_code = models.CharField(max_length=20)
+    order_id = models.CharField(max_length=50)
+    request_id = models.CharField(max_length=50)
+    amount = models.IntegerField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class MomoLink(MomoWallet):
+    pay_url = models.CharField(max_length=255)
+    short_link = models.CharField(max_length=255)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+
+class MomoPaid(MomoWallet):
+    order_info = models.CharField(max_length=255)
+    order_type = models.CharField(max_length=50)
+    trans_id = models.BigIntegerField()
+    pay_type = models.CharField(max_length=20)
+    signature = models.CharField(max_length=100)
+
+class VnpayWallet(models.Model):
+    txn_ref = models.CharField(max_length=255)
+    amount = models.IntegerField()
+    order_info = models.CharField(max_length=255)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class VnpayLink(VnpayWallet):
+    order_type = models.CharField(max_length=100)
+    ip_addr = models.CharField(max_length=45)
+    payment_url = models.TextField()
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+
+class VnpayPaid(VnpayWallet):
+    bank_code = models.CharField(max_length=20)
+    bank_tran_no = models.CharField(max_length=255)
+    card_type = models.CharField(max_length=20)
+    pay_date = models.BigIntegerField()
+    response_code = models.IntegerField()
+    tmn_code = models.CharField(max_length=8)
+    transaction_no = models.BigIntegerField()
+    transaction_status = models.IntegerField()
+    secure_hash = models.CharField(max_length=255)

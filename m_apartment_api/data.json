@@ -875,7 +875,7 @@
         "resident": [
             "resident1"
         ],
-        "amount": "1234567.34"
+        "amount": "1234567"
     }
 },
 {
@@ -885,11 +885,11 @@
         "name": "Tiền nước T4/2024",
         "created_date": "2024-04-19T04:07:22.908Z",
         "updated_date": "2024-04-19T04:07:22.908Z",
-        "active": true,
+        "active": false,
         "resident": [
             "resident2"
         ],
-        "amount": "333222.55"
+        "amount": "333222"
     }
 },
 {
@@ -903,7 +903,7 @@
         "resident": [
             "resident3"
         ],
-        "amount": "320000.00"
+        "amount": "320000"
     }
 },
 {
@@ -917,7 +917,7 @@
         "resident": [
             "resident5"
         ],
-        "amount": "1000000.00"
+        "amount": "1000000"
     }
 },
 {
@@ -927,11 +927,11 @@
         "name": "Phí an ninh T4/2024",
         "created_date": "2024-04-19T04:09:18.943Z",
         "updated_date": "2024-04-19T04:09:18.943Z",
-        "active": true,
+        "active": false,
         "resident": [
             "resident6"
         ],
-        "amount": "500000.00"
+        "amount": "500000"
     }
 },
 {
@@ -945,7 +945,7 @@
         "resident": [
             "resident4"
         ],
-        "amount": "150000.00"
+        "amount": "150000"
     }
 },
 {
@@ -959,7 +959,7 @@
         "resident": [
             "resident7"
         ],
-        "amount": "650234.23"
+        "amount": "650234"
     }
 },
 {
@@ -969,11 +969,11 @@
         "name": "Tiền đền bù thiệt hại",
         "created_date": "2024-04-19T04:13:24.619Z",
         "updated_date": "2024-04-19T04:13:24.619Z",
-        "active": true,
+        "active": false,
         "resident": [
             "resident9"
         ],
-        "amount": "1200000.00"
+        "amount": "1200000"
     }
 },
 {
@@ -983,11 +983,11 @@
         "name": "Tiền nước T4/2024",
         "created_date": "2024-04-19T13:20:27.978Z",
         "updated_date": "2024-04-19T13:20:27.978Z",
-        "active": false,
+        "active": true,
         "resident": [
             "resident1"
         ],
-        "amount": "200000.00"
+        "amount": "200000"
     }
 },
 
@@ -995,11 +995,13 @@
     "model": "apartment.receipt",
     "pk": 1,
     "fields": {
-        "name": "Hóa đơn Phí gửi xe máy tháng",
-        "created_date": "2024-04-19T04:23:42.757Z",
-        "updated_date": "2024-04-19T04:23:42.757Z",
-        "amount": "200000.00",
-        "payment": 9,
+        "name": "Hóa đơn Tiền điện T4/2024",
+        "created_date": "2024-06-12T11:48:21.612Z",
+        "updated_date": "2024-06-12T11:48:21.612Z",
+        "order_id": "MOMO18372334803816163615",
+        "pay_type": "momo",
+        "amount": 1234567,
+        "payment": 1,
         "resident": [
             "resident1"
         ]
@@ -1010,9 +1012,11 @@
     "pk": 2,
     "fields": {
         "name": "Hóa đơn Tiền Internet T4/2024",
-        "created_date": "2024-04-19T04:24:22.028Z",
-        "updated_date": "2024-04-19T04:24:22.028Z",
-        "amount": "320000.00",
+        "created_date": "2024-06-12T11:50:14.070Z",
+        "updated_date": "2024-06-12T11:50:14.070Z",
+        "order_id": "MOMO345563150496050007665",
+        "pay_type": "momo",
+        "amount": 320000,
         "payment": 3,
         "resident": [
             "resident3"
@@ -1023,13 +1027,15 @@
     "model": "apartment.receipt",
     "pk": 3,
     "fields": {
-        "name": "Hóa đơn Tiền điện T4/2024",
-        "created_date": "2024-04-19T04:24:35.071Z",
-        "updated_date": "2024-04-19T04:24:35.071Z",
-        "amount": "1234567.34",
-        "payment": 1,
+        "name": "Hóa đơn Phí an ninh T4/2024",
+        "created_date": "2024-06-12T11:51:46.166Z",
+        "updated_date": "2024-06-12T11:51:46.166Z",
+        "order_id": "MOMO471786474461052258737029",
+        "pay_type": "momo",
+        "amount": 500000,
+        "payment": 5,
         "resident": [
-            "resident1"
+            "resident6"
         ]
     }
 },
@@ -1037,16 +1043,51 @@
     "model": "apartment.receipt",
     "pk": 4,
     "fields": {
+        "name": "Hóa đơn Tiền nước T4/2024",
+        "created_date": "2024-06-12T11:52:53.504Z",
+        "updated_date": "2024-06-12T11:52:53.504Z",
+        "order_id": "VNP2108279844159630819690",
+        "pay_type": "vnpay",
+        "amount": 333223,
+        "payment": 2,
+        "resident": [
+            "resident2"
+        ]
+    }
+},
+{
+    "model": "apartment.receipt",
+    "pk": 5,
+    "fields": {
         "name": "Hóa đơn Phí dịch vụ T4/2024",
-        "created_date": "2024-04-19T04:24:52.991Z",
-        "updated_date": "2024-04-19T04:24:52.991Z",
-        "amount": "1000000.00",
+        "created_date": "2024-06-12T11:55:11.942Z",
+        "updated_date": "2024-06-12T11:55:11.942Z",
+        "order_id": "VNP192252412980684022",
+        "pay_type": "vnpay",
+        "amount": 1000000,
         "payment": 4,
         "resident": [
             "resident5"
         ]
     }
 },
+{
+    "model": "apartment.receipt",
+    "pk": 6,
+    "fields": {
+        "name": "Hóa đơn Tiền đền bù thiệt hại",
+        "created_date": "2024-06-12T11:58:45.509Z",
+        "updated_date": "2024-06-12T11:58:45.509Z",
+        "order_id": "VNP734722249984455546",
+        "pay_type": "vnpay",
+        "amount": 1200000,
+        "payment": 8,
+        "resident": [
+            "resident9"
+        ]
+    }
+},
+
 
 {
     "model": "apartment.securitycard",
@@ -3350,6 +3391,229 @@
         "updated_date": "2024-04-19T13:24:47.617Z",
         "active": true,
         "content": "Thông báo về việc tổ chức buổi tọa đàm về kế hoạch phát triển cộng đồng trong năm tới, mọi cư dân đều được mời tham dự và đóng góp ý kiến"
+    }
+},
+
+{
+    "model": "apartment.momolink",
+    "pk": 1,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO18372334803816163615",
+        "request_id": "MOMO6402193457816690988",
+        "amount": 1234567,
+        "created_date": "2024-06-12T11:47:34.512Z",
+        "updated_date": "2024-06-12T11:47:34.512Z",
+        "pay_url": "https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PMTgzNzIzMzQ4MDM4MTYxNjM2MTU&s=27b4be4dfab5d0de2a79ab7bd0f41ff6c99e7e0608d436069106dba8c94caae8",
+        "short_link": "https://test-payment.momo.vn/shortlink/m9D2blqzKr",
+        "payment": 1,
+        "resident": [
+            "resident1"
+        ]
+    }
+},
+{
+    "model": "apartment.momolink",
+    "pk": 2,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO345563150496050007665",
+        "request_id": "MOMO438367464841588044103236",
+        "amount": 320000,
+        "created_date": "2024-06-12T11:49:18.119Z",
+        "updated_date": "2024-06-12T11:49:18.119Z",
+        "pay_url": "https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PMzQ1NTYzMTUwNDk2MDUwMDA3NjY1&s=05c1f91958b83da1f0fd08159914e4036d0ed67f15d66d3430fc01909f4a4e04",
+        "short_link": "https://test-payment.momo.vn/shortlink/dEzJUAE4h7",
+        "payment": 3,
+        "resident": [
+            "resident3"
+        ]
+    }
+},
+{
+    "model": "apartment.momolink",
+    "pk": 3,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO471786474461052258737029",
+        "request_id": "MOMO01756052490650244167611",
+        "amount": 500000,
+        "created_date": "2024-06-12T11:50:46.624Z",
+        "updated_date": "2024-06-12T11:50:46.624Z",
+        "pay_url": "https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PNDcxNzg2NDc0NDYxMDUyMjU4NzM3MDI5&s=d2234bc70624f5b7167ba790b73bfea594c87a82ad75dd8df55bb515d300d615",
+        "short_link": "https://test-payment.momo.vn/shortlink/KvjJHNlYyp",
+        "payment": 5,
+        "resident": [
+            "resident6"
+        ]
+    }
+},
+
+{
+    "model": "apartment.momopaid",
+    "pk": 1,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO18372334803816163615",
+        "request_id": "MOMO6402193457816690988",
+        "amount": 1234567,
+        "created_date": "2024-06-12T11:48:21.603Z",
+        "updated_date": "2024-06-12T11:48:21.603Z",
+        "order_info": "Thanh toan hoa don bang Momo",
+        "order_type": "momo_wallet",
+        "trans_id": 4058509608,
+        "pay_type": "napas",
+        "signature": "d93f0317c33e05b30eca51d2783cf5fe11e4587102eb90cfb5e75c621bc62526"
+    }
+},
+{
+    "model": "apartment.momopaid",
+    "pk": 2,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO345563150496050007665",
+        "request_id": "MOMO438367464841588044103236",
+        "amount": 320000,
+        "created_date": "2024-06-12T11:50:14.060Z",
+        "updated_date": "2024-06-12T11:50:14.060Z",
+        "order_info": "Thanh toan hoa don bang Momo",
+        "order_type": "momo_wallet",
+        "trans_id": 4058584832,
+        "pay_type": "credit",
+        "signature": "2f39b3a0bac23a521cd1a7862a28172f0fa0f246fd59929ade51f4d04dfc8aa7"
+    }
+},
+{
+    "model": "apartment.momopaid",
+    "pk": 3,
+    "fields": {
+        "partner_code": "MOMO",
+        "order_id": "MOMO471786474461052258737029",
+        "request_id": "MOMO01756052490650244167611",
+        "amount": 500000,
+        "created_date": "2024-06-12T11:51:46.158Z",
+        "updated_date": "2024-06-12T11:51:46.158Z",
+        "order_info": "Thanh toan hoa don bang Momo",
+        "order_type": "momo_wallet",
+        "trans_id": 4058509639,
+        "pay_type": "napas",
+        "signature": "5a23ef5c9048e9bf8e91f607069bdd84be72ea1d287aa57449e10a40de60e628"
+    }
+},
+
+{
+    "model": "apartment.vnpaylink",
+    "pk": 1,
+    "fields": {
+        "txn_ref": "VNP2108279844159630819690",
+        "amount": 333223,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:52:27.859Z",
+        "updated_date": "2024-06-12T11:52:27.859Z",
+        "order_type": "billpayment",
+        "ip_addr": "127.0.0.1",
+        "payment_url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=33322300&vnp_Command=pay&vnp_CreateDate=20240612185227&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+hoa+don+bang+VnPay&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2F127.0.0.1%3A8000%2Fpaid&vnp_TmnCode=BBJDENSU&vnp_TxnRef=VNP2108279844159630819690&vnp_Version=2.1.0&vnp_SecureHash=8535fb6e9a4ddd67628638e2569b263aa3391b9b62cb0ed36d15b4496ada429d797d576e5c33a264414405b1a3bc0a6dbaf1859a48bcd958e6d4d069103db82e",
+        "payment": 2,
+        "resident": [
+            "resident2"
+        ]
+    }
+},
+{
+    "model": "apartment.vnpaylink",
+    "pk": 2,
+    "fields": {
+        "txn_ref": "VNP192252412980684022",
+        "amount": 1000000,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:53:24.602Z",
+        "updated_date": "2024-06-12T11:53:24.602Z",
+        "order_type": "billpayment",
+        "ip_addr": "127.0.0.1",
+        "payment_url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=100000000&vnp_Command=pay&vnp_CreateDate=20240612185324&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+hoa+don+bang+VnPay&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2F127.0.0.1%3A8000%2Fpaid&vnp_TmnCode=BBJDENSU&vnp_TxnRef=VNP192252412980684022&vnp_Version=2.1.0&vnp_SecureHash=72834cc8c9e6b51930668f30b9971207305216457e692747116d97503bb59fb8e2e160e4ecce1594047d524294c0419911c206ffd3ec2ac94fe9856a800b4d53",
+        "payment": 4,
+        "resident": [
+            "resident5"
+        ]
+    }
+},
+{
+    "model": "apartment.vnpaylink",
+    "pk": 3,
+    "fields": {
+        "txn_ref": "VNP734722249984455546",
+        "amount": 1200000,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:58:18.154Z",
+        "updated_date": "2024-06-12T11:58:18.154Z",
+        "order_type": "billpayment",
+        "ip_addr": "127.0.0.1",
+        "payment_url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=120000000&vnp_Command=pay&vnp_CreateDate=20240612185818&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+hoa+don+bang+VnPay&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2F127.0.0.1%3A8000%2Fpaid&vnp_TmnCode=BBJDENSU&vnp_TxnRef=VNP734722249984455546&vnp_Version=2.1.0&vnp_SecureHash=c9fb217fe1d5f7fb0d069c329361a8333f83f0c7353abcec9e8530ab9614fba906cfbd2484a1a6ac25d756cb5d8298723b5f36ae18f3a2ded7773eb6fe60873c",
+        "payment": 8,
+        "resident": [
+            "resident9"
+        ]
+    }
+},
+
+{
+    "model": "apartment.vnpaypaid",
+    "pk": 1,
+    "fields": {
+        "txn_ref": "VNP2108279844159630819690",
+        "amount": 33322300,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:52:53.495Z",
+        "updated_date": "2024-06-12T11:52:53.495Z",
+        "bank_code": "NCB",
+        "bank_tran_no": "VNP14456268",
+        "card_type": "ATM",
+        "pay_date": 20240612184958,
+        "response_code": 0,
+        "tmn_code": "BBJDENSU",
+        "transaction_no": 14456268,
+        "transaction_status": 0,
+        "secure_hash": "bc6a1967a199b5d00dfe8c77fddfcffd0cf062a57fe7fd1f5fb2a846463290d11671bd92c637b880d0e0cc167a673500a8ab7e43a5c658488fefe98a1f0f0bfd"
+    }
+},
+{
+    "model": "apartment.vnpaypaid",
+    "pk": 2,
+    "fields": {
+        "txn_ref": "VNP192252412980684022",
+        "amount": 100000000,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:55:11.933Z",
+        "updated_date": "2024-06-12T11:55:11.933Z",
+        "bank_code": "JCB",
+        "bank_tran_no": "7181931399646836203012",
+        "card_type": "JCB",
+        "pay_date": 20240612185123,
+        "response_code": 0,
+        "tmn_code": "BBJDENSU",
+        "transaction_no": 14456270,
+        "transaction_status": 0,
+        "secure_hash": "e75f0b15e3f9594a469e473587305e2542b05063b5e3040c244354d9d5c64e53bce5abe495aa4ea66826e234afbaaa6e133a5c64558ec5a0dc0390d268c3aec4"
+    }
+},
+{
+    "model": "apartment.vnpaypaid",
+    "pk": 3,
+    "fields": {
+        "txn_ref": "VNP734722249984455546",
+        "amount": 120000000,
+        "order_info": "Thanh toan hoa don bang VnPay",
+        "created_date": "2024-06-12T11:58:45.501Z",
+        "updated_date": "2024-06-12T11:58:45.501Z",
+        "bank_code": "NCB",
+        "bank_tran_no": "VNP14456276",
+        "card_type": "ATM",
+        "pay_date": 20240612185547,
+        "response_code": 0,
+        "tmn_code": "BBJDENSU",
+        "transaction_no": 14456276,
+        "transaction_status": 0,
+        "secure_hash": "801de76d6e7aa71386daf224ab7528ed7cb64d83d1baa6068e9b83bc731aef48f6a85441b1858f7c79a71aea1a61d477a6cf8f0e86dc00d867c51eeb1286f526"
     }
 }
 ]

@@ -3,7 +3,8 @@ from rest_framework.exceptions import ValidationError
 
 from m_apartment_api import settings
 from apartment.models import (Room, Resident, User, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
-                              QuestionSurvey, AnswerSurvey, ResultSurvey, Notification)
+                              QuestionSurvey, AnswerSurvey, ResultSurvey, Notification, MomoPaid, MomoLink,
+                              VnpayLink, VnpayPaid)
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,12 +61,12 @@ class ResidentSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = BaseSerializer.Meta.fields + ['amount']
+        fields = BaseSerializer.Meta.fields + ['amount', 'active']
 
 class ReceiptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Receipt
-        fields = BaseSerializer.Meta.fields + ['amount', 'payment']
+        fields = BaseSerializer.Meta.fields + ['order_id', 'amount', 'payment', 'pay_type']
 
 class SecurityCardSerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,3 +108,26 @@ class ResultSurveySerializer(serializers.ModelSerializer):
         model = ResultSurvey
         fields = ['id', 'survey', 'question', 'answer', 'resident']
 
+class MomoLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MomoLink
+        fields = ['partner_code', 'order_id', 'request_id', 'amount', 'created_date', 'updated_date', 'pay_url',
+                  'short_link', 'payment', 'resident']
+
+class MomoPaidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MomoPaid
+        fields = ['partner_code', 'order_id', 'request_id', 'amount', 'created_date', 'updated_date', 'order_info',
+                  'order_type', 'trans_id', 'pay_type']
+
+class VnpayLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VnpayLink
+        fields = ['txn_ref', 'amount', 'order_info', 'created_date', 'updated_date', 'order_type', 'ip_addr',
+                  'payment_url', 'payment', 'resident']
+
+class VnpayPaidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VnpayPaid
+        fields = ['txn_ref', 'amount', 'order_info', 'created_date', 'updated_date', 'bank_code', 'bank_tran_no',
+                  'card_type', 'pay_date', 'transaction_no', 'transaction_status']

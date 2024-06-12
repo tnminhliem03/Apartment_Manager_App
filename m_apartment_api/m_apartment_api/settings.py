@@ -164,8 +164,14 @@ CLIENT_SECRET = 'guESXoGydjlz9hTuVHaoahwfFBv98laD7kVhcNcBdgfy3HKMCdzjxEImrowaDt9
 OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
 
 # vnpay
-VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config
+VNPAY_RETURN_URL = 'http://127.0.0.1:8000/paid'  # get from config
 VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
 VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
 VNPAY_TMN_CODE = 'BBJDENSU'  # Website ID in VNPAY System, get from config
 VNPAY_HASH_SECRET_KEY = '1S8CJ30B6CNNK2G4I2A0GJ6RYKEQN966'  # Secret key for create checksum,get from config
+
+# momo
+MOMO_PARTNER_CODE = "MOMO"
+MOMO_ACCESS_KEY = "F8BBA842ECF85"
+MOMO_SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+MOMO_RETURN_URL = "http://127.0.0.1:8000/paid"

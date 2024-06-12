@@ -1,3 +1,5 @@
+import re
+
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from rest_framework import viewsets, generics, parsers, permissions, status
@@ -5,11 +7,15 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from vnpay.utils import VnPay
-
 from apartment import serializers, paginators, perms
+from m_apartment_api import settings
 from django.contrib.auth.hashers import make_password
 from apartment.models import (Resident, User, Room, Payment, Receipt, SecurityCard, Package, Complaint, Survey,
-                              QuestionSurvey, AnswerSurvey, ResultSurvey, Notification, PaymentForm)
+                              QuestionSurvey, AnswerSurvey, ResultSurvey, Notification, PaymentForm, MomoPaid,
+                              MomoLink, VnpayLink, VnpayPaid)
+# momo
+import uuid
+
 # vnpay
 import hashlib
 import hmac
@@ -26,157 +32,190 @@ from django.shortcuts import render, redirect
 from django.utils.http import unquote
 from apartment.vnpay import vnpay
 
+vnp = vnpay()
+
+def check_active_payment(payment):
+    if (payment.active == 1):
+        return 1
+
+def check_receipt(order_id):
+    if Receipt.objects.filter(order_id=order_id).exists():
+        return 0
+    return 1
+
+def update_active_payment(payment):
+    if check_active_payment(payment):
+        setattr(payment, 'active', '0')
+        payment.save()
+
+def create_receipt(payment, order_id, pay_type):
+    Receipt.objects.create(name=f'Hóa đơn {payment.name}', amount=payment.amount, payment=payment,
+                           resident=payment.resident, order_id=order_id, pay_type=pay_type)
+
+# momo
+def create_signature(rawSignature):
+    h = hmac.new(bytes(settings.MOMO_SECRET_KEY, 'ascii'), bytes(rawSignature, 'ascii'), hashlib.sha256)
+    signature = h.hexdigest()
+    return signature
+
+def create_link_momo(payment):
+    endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
+    orderInfo = "Thanh toan hoa don bang Momo"
+    redirectUrl = settings.MOMO_RETURN_URL
+    ipnUrl = settings.MOMO_RETURN_URL
+    amount = payment.amount
+    orderId = "MOMO" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
+    requestId = "MOMO" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
+    extraData = ""  # pass empty value or Encode base64 JsonString
+    partnerName = "Chung cu LK"
+    requestType = "payWithMethod"
+    storeId = "LK Payment"
+    orderGroupId = ""
+    autoCapture = True
+    lang = "vi"
+    orderGroupId = ""
+
+    # before sign HMAC SHA256 with format: accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl
+    # &orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId
+    # &requestType=$requestType
+    rawSignature = "accessKey=" + settings.MOMO_ACCESS_KEY + "&amount=" + str(amount) + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId \
+                   + "&orderInfo=" + orderInfo + "&partnerCode=" + settings.MOMO_PARTNER_CODE + "&redirectUrl=" + redirectUrl \
+                   + "&requestId=" + requestId + "&requestType=" + requestType
+    # signature
+    signature = create_signature(rawSignature)
+
+    # json object send to MoMo endpoint
+
+    data = {
+        'partnerCode': settings.MOMO_PARTNER_CODE,
+        'orderId': orderId,
+        'partnerName': partnerName,
+        'storeId': storeId,
+        'ipnUrl': ipnUrl,
+        'amount': amount,
+        'lang': lang,
+        'requestType': requestType,
+        'redirectUrl': redirectUrl,
+        'autoCapture': autoCapture,
+        'orderInfo': orderInfo,
+        'requestId': requestId,
+        'extraData': extraData,
+        'signature': signature,
+        'orderGroupId': orderGroupId
+    }
+    data = json.dumps(data)
+    clen = len(data)
+    response = requests.post(endpoint, data=data,
+                             headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
+
+    print(response.json())
+
+    return response.json()
+
+def save_payment(request):
+    # momo
+    check_momo = request.GET.get('partnerCode', None)
+    order_id = request.GET.get('orderId')
+
+    # vnpay
+    check_vnp = request.GET.get('vnp_Amount', None)
+    txn_ref = request.GET.get('vnp_TxnRef')
+
+    if check_momo is not None and not MomoPaid.objects.filter(order_id=order_id):
+        momo_link = MomoLink.objects.get(order_id=order_id)
+        payment_momo = momo_link.payment
+        MomoPaid.objects.create(partner_code=request.GET.get('partnerCode'), order_id=order_id,
+                            request_id=request.GET.get('requestId'), amount=request.GET.get('amount'),
+                            order_info=request.GET.get('orderInfo'), order_type=request.GET.get('orderType'),
+                            trans_id=request.GET.get('transId'), pay_type=request.GET.get('payType'),
+                            signature=request.GET.get('signature'))
+
+        if check_receipt(order_id) and check_active_payment(payment_momo):
+            create_receipt(payment_momo, order_id, "momo")
+            update_active_payment(payment_momo)
+
+    elif check_vnp is not None and not VnpayPaid.objects.filter(txn_ref=txn_ref):
+        vnpay_link = VnpayLink.objects.get(txn_ref=txn_ref)
+        payment_vnp = vnpay_link.payment
+        VnpayPaid.objects.create(txn_ref=txn_ref, amount=request.GET.get('vnp_Amount'),
+                                 order_info=request.GET.get('vnp_OrderInfo'),
+                                 bank_code=request.GET.get('vnp_BankCode'),
+                                 bank_tran_no=request.GET.get('vnp_BankTranNo'),
+                                 card_type=request.GET.get('vnp_CardType'),
+                                 pay_date=request.GET.get('vnp_PayDate'),
+                                 response_code=request.GET.get('vnp_ResponseCode'),
+                                 tmn_code=request.GET.get('vnp_TmnCode'),
+                                 transaction_no=request.GET.get('vnp_TransactionNo'),
+                                 transaction_status=request.GET.get('vnp_TransactionStatus'),
+                                 secure_hash=request.GET.get('vnp_SecureHash'))
+
+        if check_receipt(txn_ref) and check_active_payment(payment_vnp):
+            create_receipt(payment_vnp, txn_ref, "vnpay")
+            update_active_payment(payment_vnp)
+
+    return render(request, "payment/paid.html")
+
+def transaction_status(orderId, requestId):
+    endpoint = "https://test-payment.momo.vn/v2/gateway/api/query"
+    rawSignature = "accessKey=" + settings.MOMO_ACCESS_KEY + "&orderId=" + orderId + "&partnerCode=" + settings.MOMO_PARTNER_CODE + "&requestId=" + requestId
+
+    signature = create_signature(rawSignature)
+
+    data = {
+        'partnerCode': settings.MOMO_PARTNER_CODE,
+        'orderId': orderId,
+        'lang': 'vi',
+        'requestId': requestId,
+        'signature': signature,
+    }
+    data = json.dumps(data)
+    clen = len(data)
+    response = requests.post(endpoint, data=data,
+                             headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
+    return response.json()
+
 # vnpay
-def index(request):
-    return render(request, "payment/index.html", {"title": "Danh sách demo"})
-
-
-def hmacsha512(key, data):
-    byteKey = key.encode('utf-8')
-    byteData = data.encode('utf-8')
-    return hmac.new(byteKey, byteData, hashlib.sha512).hexdigest()
-
-
-def payment(request):
-    if request.method == 'POST':
-        # Process input data and build url payment
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            order_type = form.cleaned_data['order_type']
-            order_id = form.cleaned_data['order_id']
-            amount = form.cleaned_data['amount']
-            order_desc = form.cleaned_data['order_desc']
-            bank_code = form.cleaned_data['bank_code']
-            language = form.cleaned_data['language']
-            ipaddr = get_client_ip(request)
-            # Build URL Payment
-            vnp = vnpay()
-            vnp.requestData['vnp_Version'] = '2.1.0'
-            vnp.requestData['vnp_Command'] = 'pay'
-            vnp.requestData['vnp_TmnCode'] = settings.VNPAY_TMN_CODE
-            vnp.requestData['vnp_Amount'] = amount * 100
-            vnp.requestData['vnp_CurrCode'] = 'VND'
-            vnp.requestData['vnp_TxnRef'] = order_id
-            vnp.requestData['vnp_OrderInfo'] = order_desc
-            vnp.requestData['vnp_OrderType'] = order_type
-            # Check language, default: vn
-            if language and language != '':
-                vnp.requestData['vnp_Locale'] = language
-            else:
-                vnp.requestData['vnp_Locale'] = 'vn'
-                # Check bank_code, if bank_code is empty, customer will be selected bank on VNPAY
-            if bank_code and bank_code != "":
-                vnp.requestData['vnp_BankCode'] = bank_code
-
-            vnp.requestData['vnp_CreateDate'] = datetime.now().strftime('%Y%m%d%H%M%S')  # 20150410063022
-            vnp.requestData['vnp_IpAddr'] = ipaddr
-            vnp.requestData['vnp_ReturnUrl'] = settings.VNPAY_RETURN_URL
-            vnpay_payment_url = vnp.get_payment_url(settings.VNPAY_PAYMENT_URL, settings.VNPAY_HASH_SECRET_KEY)
-            print(vnpay_payment_url)
-            return redirect(vnpay_payment_url)
-        else:
-            print("Form input not validate")
+def create_link_vnpay(request, payment):
+    order_type = "billpayment"
+    order_id = "VNP" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
+    amount = payment.amount
+    order_desc = "Thanh toan hoa don bang VnPay"
+    bank_code = request.data.get('bank_code')
+    language = "vn"
+    ipaddr = get_client_ip(request)
+    # Build URL Payment
+    vnp.requestData['vnp_Version'] = '2.1.0'
+    vnp.requestData['vnp_Command'] = 'pay'
+    vnp.requestData['vnp_TmnCode'] = settings.VNPAY_TMN_CODE
+    vnp.requestData['vnp_Amount'] = int(amount) * 100
+    vnp.requestData['vnp_CurrCode'] = 'VND'
+    vnp.requestData['vnp_TxnRef'] = order_id
+    vnp.requestData['vnp_OrderInfo'] = order_desc
+    vnp.requestData['vnp_OrderType'] = order_type
+    # Check language, default: vn
+    if language and language != '':
+        vnp.requestData['vnp_Locale'] = language
     else:
-        return render(request, "payment/payment.html", {"title": "Thanh toán"})
+        vnp.requestData['vnp_Locale'] = 'vn'
+        # Check bank_code, if bank_code is empty, customer will be selected bank on VNPAY
+    if bank_code and bank_code != "":
+        vnp.requestData['vnp_BankCode'] = bank_code
 
+    vnp.requestData['vnp_CreateDate'] = datetime.now().strftime('%Y%m%d%H%M%S')
+    vnp.requestData['vnp_IpAddr'] = ipaddr
+    vnp.requestData['vnp_ReturnUrl'] = settings.VNPAY_RETURN_URL
+    vnpay_payment_url = vnp.get_payment_url(settings.VNPAY_PAYMENT_URL, settings.VNPAY_HASH_SECRET_KEY)
+    payment_data = {
+        'vnp_TxnRef': order_id,
+        'vnp_Amount': amount,
+        'vnp_OrderInfo': order_desc,
+        'vnp_OrderType': order_type,
+        'language': language,
+        'vnp_IpAddr': ipaddr,
+        'payment_url': vnpay_payment_url
+    }
 
-def payment_ipn(request):
-    inputData = request.GET
-    if inputData:
-        vnp = vnpay()
-        vnp.responseData = inputData.dict()
-        order_id = inputData['vnp_TxnRef']
-        amount = inputData['vnp_Amount']
-        order_desc = inputData['vnp_OrderInfo']
-        vnp_TransactionNo = inputData['vnp_TransactionNo']
-        vnp_ResponseCode = inputData['vnp_ResponseCode']
-        vnp_TmnCode = inputData['vnp_TmnCode']
-        vnp_PayDate = inputData['vnp_PayDate']
-        vnp_BankCode = inputData['vnp_BankCode']
-        vnp_CardType = inputData['vnp_CardType']
-        if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
-            # Check & Update Order Status in your Database
-            # Your code here
-            firstTimeUpdate = True
-            totalamount = True
-            if totalamount:
-                if firstTimeUpdate:
-                    if vnp_ResponseCode == '00':
-                        print('Payment Success. Your code implement here')
-                    else:
-                        print('Payment Error. Your code implement here')
-
-                    # Return VNPAY: Merchant update success
-                    result = JsonResponse({'RspCode': '00', 'Message': 'Confirm Success'})
-                else:
-                    # Already Update
-                    result = JsonResponse({'RspCode': '02', 'Message': 'Order Already Update'})
-            else:
-                # invalid amount
-                result = JsonResponse({'RspCode': '04', 'Message': 'invalid amount'})
-        else:
-            # Invalid Signature
-            result = JsonResponse({'RspCode': '97', 'Message': 'Invalid Signature'})
-    else:
-        result = JsonResponse({'RspCode': '99', 'Message': 'Invalid request'})
-
-    return result
-
-
-def payment_return(request):
-    # inputData = request.GET
-    inputData = request.POST
-    if inputData:
-        vnp = vnpay()
-        vnp.responseData = inputData.dict()
-        order_id = inputData['vnp_TxnRef']
-        amount = int(inputData['vnp_Amount']) / 100
-        order_desc = inputData['vnp_OrderInfo']
-        vnp_TransactionNo = inputData['vnp_TransactionNo']
-        vnp_ResponseCode = inputData['vnp_ResponseCode']
-        vnp_TmnCode = inputData['vnp_TmnCode']
-        vnp_PayDate = inputData['vnp_PayDate']
-        vnp_BankCode = inputData['vnp_BankCode']
-        vnp_CardType = inputData['vnp_CardType']
-
-        if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
-            if vnp_ResponseCode == "00":
-                # return JsonResponse({"title": "Kết quả thanh toán",
-                #                                                "result": "Thành công", "order_id": order_id,
-                #                                                "amount": amount,
-                #                                                "order_desc": order_desc,
-                #                                                "vnp_TransactionNo": vnp_TransactionNo,
-                #                                                "vnp_ResponseCode": vnp_ResponseCode})
-                return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
-                                                               "result": "Thành công", "order_id": order_id,
-                                                               "amount": amount,
-                                                               "order_desc": order_desc,
-                                                               "vnp_TransactionNo": vnp_TransactionNo,
-                                                               "vnp_ResponseCode": vnp_ResponseCode})
-            else:
-                # return JsonResponse({"title": "Kết quả thanh toán",
-                #                                                "result": "Lỗi", "order_id": order_id,
-                #                                                "amount": amount,
-                #                                                "order_desc": order_desc,
-                #                                                "vnp_TransactionNo": vnp_TransactionNo,
-                #                                                "vnp_ResponseCode": vnp_ResponseCode})
-                return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
-                                                               "result": "Lỗi", "order_id": order_id,
-                                                               "amount": amount,
-                                                               "order_desc": order_desc,
-                                                               "vnp_TransactionNo": vnp_TransactionNo,
-                                                               "vnp_ResponseCode": vnp_ResponseCode})
-        else:
-            # return JsonResponse({"title": "Kết quả thanh toán", "result": "Lỗi", "order_id": order_id, "amount": amount,
-            #                "order_desc": order_desc, "vnp_TransactionNo": vnp_TransactionNo,
-            #                "vnp_ResponseCode": vnp_ResponseCode, "msg": "Sai checksum"})
-            return render(request, "payment/payment_return.html",
-                          {"title": "Kết quả thanh toán", "result": "Lỗi", "order_id": order_id, "amount": amount,
-                           "order_desc": order_desc, "vnp_TransactionNo": vnp_TransactionNo,
-                           "vnp_ResponseCode": vnp_ResponseCode, "msg": "Sai checksum"})
-    else:
-        return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán", "result": ""})
-
+    return payment_data
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -191,124 +230,17 @@ n_str = str(n)
 while len(n_str) < 12:
     n_str = '0' + n_str
 
-
-def query(request):
-    if request.method == 'GET':
-        return render(request, "payment/query.html", {"title": "Kiểm tra kết quả giao dịch"})
-
-    url = settings.VNPAY_API_URL
-    secret_key = settings.VNPAY_HASH_SECRET_KEY
-    vnp_TmnCode = settings.VNPAY_TMN_CODE
-    vnp_Version = '2.1.0'
-
-    vnp_RequestId = n_str
-    vnp_Command = 'querydr'
-    vnp_TxnRef = request.POST['order_id']
-    vnp_OrderInfo = 'kiem tra gd'
-    vnp_TransactionDate = request.POST['trans_date']
-    vnp_CreateDate = datetime.now().strftime('%Y%m%d%H%M%S')
-    vnp_IpAddr = get_client_ip(request)
-
-    hash_data = "|".join([
-        vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode,
-        vnp_TxnRef, vnp_TransactionDate, vnp_CreateDate,
-        vnp_IpAddr, vnp_OrderInfo
-    ])
-
-    secure_hash = hmac.new(secret_key.encode(), hash_data.encode(), hashlib.sha512).hexdigest()
-
-    data = {
-        "vnp_RequestId": vnp_RequestId,
-        "vnp_TmnCode": vnp_TmnCode,
-        "vnp_Command": vnp_Command,
-        "vnp_TxnRef": vnp_TxnRef,
-        "vnp_OrderInfo": vnp_OrderInfo,
-        "vnp_TransactionDate": vnp_TransactionDate,
-        "vnp_CreateDate": vnp_CreateDate,
-        "vnp_IpAddr": vnp_IpAddr,
-        "vnp_Version": vnp_Version,
-        "vnp_SecureHash": secure_hash
-    }
-
-    headers = {"Content-Type": "application/json"}
-
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    if response.status_code == 200:
-        response_json = json.loads(response.text)
-    else:
-        response_json = {"error": f"Request failed with status code: {response.status_code}"}
-
-    return render(request, "payment/query.html", {"title": "Kiểm tra kết quả giao dịch", "response_json": response_json})
-
-def refund(request):
-    if request.method == 'GET':
-        return render(request, "payment/refund.html", {"title": "Hoàn tiền giao dịch"})
-
-    url = settings.VNPAY_API_URL
-    secret_key = settings.VNPAY_HASH_SECRET_KEY
-    vnp_TmnCode = settings.VNPAY_TMN_CODE
-    vnp_RequestId = n_str
-    vnp_Version = '2.1.0'
-    vnp_Command = 'refund'
-    vnp_TransactionType = request.POST['TransactionType']
-    vnp_TxnRef = request.POST['order_id']
-    vnp_Amount = request.POST['amount']
-    vnp_OrderInfo = request.POST['order_desc']
-    vnp_TransactionNo = '0'
-    vnp_TransactionDate = request.POST['trans_date']
-    vnp_CreateDate = datetime.now().strftime('%Y%m%d%H%M%S')
-    vnp_CreateBy = 'user01'
-    vnp_IpAddr = get_client_ip(request)
-
-    hash_data = "|".join([
-        vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TransactionType, vnp_TxnRef,
-        vnp_Amount, vnp_TransactionNo, vnp_TransactionDate, vnp_CreateBy, vnp_CreateDate,
-        vnp_IpAddr, vnp_OrderInfo
-    ])
-
-    secure_hash = hmac.new(secret_key.encode(), hash_data.encode(), hashlib.sha512).hexdigest()
-
-    data = {
-        "vnp_RequestId": vnp_RequestId,
-        "vnp_TmnCode": vnp_TmnCode,
-        "vnp_Command": vnp_Command,
-        "vnp_TxnRef": vnp_TxnRef,
-        "vnp_Amount": vnp_Amount,
-        "vnp_OrderInfo": vnp_OrderInfo,
-        "vnp_TransactionDate": vnp_TransactionDate,
-        "vnp_CreateDate": vnp_CreateDate,
-        "vnp_IpAddr": vnp_IpAddr,
-        "vnp_TransactionType": vnp_TransactionType,
-        "vnp_TransactionNo": vnp_TransactionNo,
-        "vnp_CreateBy": vnp_CreateBy,
-        "vnp_Version": vnp_Version,
-        "vnp_SecureHash": secure_hash
-    }
-
-    headers = {"Content-Type": "application/json"}
-
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    if response.status_code == 200:
-        response_json = json.loads(response.text)
-    else:
-        response_json = {"error": f"Request failed with status code: {response.status_code}"}
-
-    return render(request, "payment/refund.html", {"title": "Kết quả hoàn tiền giao dịch", "response_json": response_json})
-
-
 # Myapp
 def create_payment(name, amount, resident_id):
     Payment.objects.create(name=name, amount=amount, resident_id=resident_id)
 
-def type_vehicle_create_pay(obj):
-    if obj.type_vehicle == 'bike':
-        create_payment('Phí gửi xe đạp tháng', '900000', obj.resident.id)
-    elif obj.type_vehicle == 'motorbike':
-        create_payment('Phí gửi xe máy tháng', '150000', obj.resident.id)
-    elif obj.type_vehicle == 'car':
-        create_payment('Phí gửi xe hơi tháng', '1600000', obj.resident.id)
+def type_vehicle_create_pay(sc):
+    if sc.type_vehicle == 'bike':
+        create_payment('Phí gửi xe đạp tháng', '900000', sc.resident.id)
+    elif sc.type_vehicle == 'motorbike':
+        create_payment('Phí gửi xe máy tháng', '150000', sc.resident.id)
+    elif sc.type_vehicle == 'car':
+        create_payment('Phí gửi xe hơi tháng', '1600000', sc.resident.id)
 
 class RoomViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Room.objects.all()
@@ -404,7 +336,7 @@ class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView):
                                          vehicle_number=request.data.get('vehicle_number'),
                                          type_vehicle = request.data.get('type_vehicle'),
                                          resident_id=request.user.id)
-        type_vehicle_create_pay(self)
+        type_vehicle_create_pay(sc)
 
         return Response(serializers.SecurityCardSerializer(sc).data, status=status.HTTP_201_CREATED)
 
@@ -417,10 +349,29 @@ class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return Response(serializers.SecurityCardSerializer(sc).data, status=status.HTTP_200_OK)
 
-class NotificationViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView, generics.UpdateAPIView,
-                          generics.DestroyAPIView):
+class NotificationViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Notification.objects.all()
     serializer_class = serializers.NotificationSerializer
+    pagination_class = paginators.BasePaginator
+
+class MomoLinkViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = MomoLink.objects.all()
+    serializer_class = serializers.MomoLinkSerializer
+    pagination_class = paginators.BasePaginator
+
+class MomoPaidViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = MomoPaid.objects.all()
+    serializer_class = serializers.MomoPaidSerializer
+    pagination_class = paginators.BasePaginator
+
+class VnpayLinkViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = VnpayLink.objects.all()
+    serializer_class = serializers.VnpayLinkSerializer
+    pagination_class = paginators.BasePaginator
+
+class VnpayPaidViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = VnpayPaid.objects.all()
+    serializer_class = serializers.VnpayPaidSerializer
     pagination_class = paginators.BasePaginator
 
 class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
@@ -429,7 +380,7 @@ class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
     pagination_class = paginators.BasePaginator
 
     def get_permissions(self):
-        if self.action == 'paid':
+        if self.action in ['get_current_payment', 'create_link_momo', 'create_link_vnp']:
             return [perms.Owner()]
 
         return [permissions.AllowAny()]
@@ -447,19 +398,51 @@ class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
 
         return queryset
 
-    @action(methods=['post'], url_path='paid', detail=True)
-    def paid(self, request, pk):
-        pay = self.get_object()
-        if (pay.active == 1):
-            setattr(pay, 'active', '0')
-            Receipt.objects.create(name=f'Hóa đơn {pay.name}', amount=pay.amount, payment=pay,
-                                   resident=pay.resident)
-            pay.save()
+    @action(methods=['get'], url_path='current', detail=True)
+    def get_current_payment(self, request, pk):
+        current_pay = serializers.PaymentSerializer(self.get_object()).data
+        return Response(current_pay)
+
+    # momo
+    @action(methods=['post'], url_path='paid-momo', detail=True)
+    def create_link_momo(self, request, pk):
+        pay_momo_view = self.get_object()
+        if check_active_payment(pay_momo_view):
+            pay_momo_data = create_link_momo(pay_momo_view)
+            if MomoLink.objects.filter(payment=pay_momo_view):
+                return Response({"error": "Đã tồn tại link thanh toán"}, status=status.HTTP_200_OK)
+            else:
+                MomoLink.objects.create(partner_code=pay_momo_data['partnerCode'], order_id=pay_momo_data['orderId'],
+                                        request_id=pay_momo_data['requestId'], amount=pay_momo_data['amount'],
+                                        pay_url=pay_momo_data['payUrl'], short_link=pay_momo_data['shortLink'],
+                                        resident_id=request.user.id, payment=pay_momo_view)
         else:
-            return Response({"error": "Hóa đơn đã được thanh toán"})
+            return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data=pay_momo_data)
 
-        return Response(serializers.PaymentSerializer(pay).data)
+    @action(methods=['post'], url_path='transaction-status', detail=False)
+    def check_transaction_status(self, request):
+        order_id = request.data.get('order_id')
+        request_id = request.data.get('request_id')
+        status_momo_data = transaction_status(order_id, request_id)
+        return Response(status=status.HTTP_200_OK, data=status_momo_data)
 
+    # vnpay
+    @action(methods=['post'], url_path='paid-vnp', detail=True)
+    def create_link_vnp(self, request, pk):
+        pay_vnp_view = self.get_object()
+        if check_active_payment(pay_vnp_view):
+            pay_vnp_data = create_link_vnpay(request, pay_vnp_view)
+            if VnpayLink.objects.filter(payment=pay_vnp_view):
+                return Response({"error": "Đã tồn tại link thanh toán"}, status=status.HTTP_200_OK)
+            else:
+                VnpayLink.objects.create(txn_ref=pay_vnp_data['vnp_TxnRef'], amount=pay_vnp_data['vnp_Amount'],
+                                         order_info=pay_vnp_data['vnp_OrderInfo'], order_type=pay_vnp_data['vnp_OrderType'],
+                                         ip_addr=pay_vnp_data['vnp_IpAddr'], payment=pay_vnp_view,
+                                         resident_id=request.user.id, payment_url=pay_vnp_data['payment_url'])
+        else:
+            return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data = pay_vnp_data)
 
 class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Receipt.objects.all()
@@ -478,6 +461,11 @@ class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
             queryset = queryset.filter(resident_id=r_id)
 
         return queryset
+
+    @action(methods=['get'], url_path='current', detail=True)
+    def get_current_receipt(self, request, pk):
+        current_receipt = serializers.ReceiptSerializer(self.get_object()).data
+        return Response(current_receipt)
 
 class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Package.objects.filter(active=True)
