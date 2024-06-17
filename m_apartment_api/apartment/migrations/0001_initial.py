@@ -206,7 +206,6 @@ class Migration(migrations.Migration):
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True)),
                 ('content', ckeditor.fields.RichTextField()),
-                ('image', cloudinary.models.CloudinaryField(max_length=255)),
                 ('resident', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='apartment.resident')),
             ],
             options={

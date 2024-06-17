@@ -81,12 +81,12 @@ class NotificationSerializer(serializers.ModelSerializer):
 class PackageSerializer(ImageSerializer):
     class Meta:
         model = Package
-        fields = BaseSerializer.Meta.fields + ['note', 'image']
+        fields = BaseSerializer.Meta.fields + ['note', 'image', 'active']
 
-class ComplaintSerializer(ImageSerializer):
+class ComplaintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
-        fields = BaseSerializer.Meta.fields + ['content', 'image']
+        fields = BaseSerializer.Meta.fields + ['content']
 
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:

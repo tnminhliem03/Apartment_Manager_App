@@ -155,8 +155,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Local
-CLIENT_ID = 'BimeGdIrxuyijzRMdV4jv8OUbx9gStE8ZmmpwGtz'
-CLIENT_SECRET = 'bfQ7wgupB7zhLmAflGhQbxLfzT2LgrPH0T1KAbQr41ji5vpKD01LbEToHgkBWf49CeckVgrxBv8tiiCTBeZfrmQC9Hn0ceubISDYydMnh3bQcD08uFp1tWXoyW0SDoWC'
+CLIENT_ID = '4hImR9K2KtPGSj26CxHsmun8xedjHoeb9454ujur'
+CLIENT_SECRET = '0zhxSJ0uJ5UTKnMdJxm6NBsh0LUX73me4QzCxaRFe5iWDIwTB6VBI6bPMQNv0rLCUZJAuWEiilI2K4EIkP3rLVey4RhjwT3iJwQEu4ZxKh89Qcicn77JgGjz7nxWDvZm'
 
 # Pythonanywhere
 CLIENT_ID = 'ZggMjPy3cGKKQT6ms9GSTJIhAfbAsm87R1LTJyOq'

@@ -6,7 +6,6 @@ from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
-from vnpay.utils import VnPay
 from apartment import serializers, paginators, perms
 from m_apartment_api import settings
 from django.contrib.auth.hashers import make_password
@@ -60,9 +59,9 @@ def create_signature(rawSignature):
 
 def create_link_momo(payment):
     endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
-    orderInfo = "Thanh toan hoa don bang Momo"
-    redirectUrl = settings.MOMO_RETURN_URL
-    ipnUrl = settings.MOMO_RETURN_URL
+    orderInfo = "Thanh toan hoa don so " + str(payment.id) + " bang Momo"
+    redirectUrl = "https://momo.vn/"
+    ipnUrl = "https://momo.vn/"
     amount = payment.amount
     orderId = "MOMO" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
     requestId = "MOMO" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
@@ -179,7 +178,7 @@ def create_link_vnpay(request, payment):
     order_type = "billpayment"
     order_id = "VNP" + ''.join(filter(str.isdigit, str(uuid.uuid4())))
     amount = payment.amount
-    order_desc = "Thanh toan hoa don bang VnPay"
+    order_desc = "Thanh toán hóa đơn " + str(payment.name) + " bằng VNPay"
     bank_code = request.data.get('bank_code')
     language = "vn"
     ipaddr = get_client_ip(request)
@@ -216,6 +215,17 @@ def create_link_vnpay(request, payment):
     }
 
     return payment_data
+
+# def transaction_vnp(data_link):
+#     endpoint = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
+#     vnp_Version = data_link['vnp_Version']
+#     vnp_Command = "querydr"
+#     vnp_TmnCode = settings.VNPAY_TMN_CODE
+#     vnp_TxnRef = data_link['vnp_TxnRef']
+#     vnp_OrderInfo = data_link['vnp_OrderInfo']
+#
+
+
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -308,7 +318,7 @@ class ResidentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPI
 
         return Response(serializers.ResidentSerializer(resident).data)
 
-class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView):
+class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
     queryset = SecurityCard.objects.filter(active=True)
     serializer_class = serializers.SecurityCardSerializer
     pagination_class = paginators.BasePaginator
@@ -369,10 +379,43 @@ class VnpayLinkViewSet(viewsets.ViewSet, generics.ListAPIView):
     serializer_class = serializers.VnpayLinkSerializer
     pagination_class = paginators.BasePaginator
 
+    def get_permissions(self):
+        if self.action in ['create_link_vnp']:
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], url_path='links', detail=False)
+    def create_link_vnp(self, request):
+        payment_id = request.data.get('payment')
+        payment = Payment.objects.get(id=payment_id)
+        if check_active_payment(payment):
+            pay_vnp_data = create_link_vnpay(request, payment)
+            VnpayLink.objects.create(txn_ref=pay_vnp_data['vnp_TxnRef'], amount=pay_vnp_data['vnp_Amount'],
+                                     order_info=pay_vnp_data['vnp_OrderInfo'],
+                                     order_type=pay_vnp_data['vnp_OrderType'],
+                                     ip_addr=pay_vnp_data['vnp_IpAddr'], payment=payment,
+                                     resident_id=request.user.id, payment_url=pay_vnp_data['payment_url'])
+        else:
+            return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data=pay_vnp_data)
+
 class VnpayPaidViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = VnpayPaid.objects.all()
     serializer_class = serializers.VnpayPaidSerializer
     pagination_class = paginators.BasePaginator
+
+    def get_permissions(self):
+        if self.action in ['handle_vnp']:
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], url_path='handle', detail=False)
+    def handle_vnp(self, request):
+        save_payment(request)
+        print(save_payment(request))
+        return Response(status=status.HTTP_200_OK)
 
 class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
     queryset = Payment.objects.all()
@@ -409,13 +452,10 @@ class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
         pay_momo_view = self.get_object()
         if check_active_payment(pay_momo_view):
             pay_momo_data = create_link_momo(pay_momo_view)
-            if MomoLink.objects.filter(payment=pay_momo_view):
-                return Response({"error": "Đã tồn tại link thanh toán"}, status=status.HTTP_200_OK)
-            else:
-                MomoLink.objects.create(partner_code=pay_momo_data['partnerCode'], order_id=pay_momo_data['orderId'],
-                                        request_id=pay_momo_data['requestId'], amount=pay_momo_data['amount'],
-                                        pay_url=pay_momo_data['payUrl'], short_link=pay_momo_data['shortLink'],
-                                        resident_id=request.user.id, payment=pay_momo_view)
+            MomoLink.objects.create(partner_code=pay_momo_data['partnerCode'], order_id=pay_momo_data['orderId'],
+                                    request_id=pay_momo_data['requestId'], amount=pay_momo_data['amount'],
+                                    pay_url=pay_momo_data['payUrl'], short_link=pay_momo_data['shortLink'],
+                                    resident_id=request.user.id, payment=pay_momo_view)
         else:
             return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_200_OK, data=pay_momo_data)
@@ -433,16 +473,14 @@ class PaymentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
         pay_vnp_view = self.get_object()
         if check_active_payment(pay_vnp_view):
             pay_vnp_data = create_link_vnpay(request, pay_vnp_view)
-            if VnpayLink.objects.filter(payment=pay_vnp_view):
-                return Response({"error": "Đã tồn tại link thanh toán"}, status=status.HTTP_200_OK)
-            else:
-                VnpayLink.objects.create(txn_ref=pay_vnp_data['vnp_TxnRef'], amount=pay_vnp_data['vnp_Amount'],
-                                         order_info=pay_vnp_data['vnp_OrderInfo'], order_type=pay_vnp_data['vnp_OrderType'],
-                                         ip_addr=pay_vnp_data['vnp_IpAddr'], payment=pay_vnp_view,
-                                         resident_id=request.user.id, payment_url=pay_vnp_data['payment_url'])
+            VnpayLink.objects.create(txn_ref=pay_vnp_data['vnp_TxnRef'], amount=pay_vnp_data['vnp_Amount'],
+                                     order_info=pay_vnp_data['vnp_OrderInfo'],
+                                     order_type=pay_vnp_data['vnp_OrderType'],
+                                     ip_addr=pay_vnp_data['vnp_IpAddr'], payment=pay_vnp_view,
+                                     resident_id=request.user.id, payment_url=pay_vnp_data['payment_url'])
         else:
             return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_200_OK, data = pay_vnp_data)
+        return Response(status=status.HTTP_200_OK, data=pay_vnp_data)
 
 class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Receipt.objects.all()
@@ -530,7 +568,7 @@ class ComplaintViewSet(viewsets.ViewSet, generics.ListAPIView):
     @action(methods=['post'], url_path='create-complaint', detail=False)
     def add_complaint(self, request):
         comp = Complaint.objects.create(name=request.data.get('name'), content=request.data.get('content'),
-                                        image=request.data.get('image'), resident_id=request.user.id)
+                                        resident_id=request.user.id)
         return Response(serializers.ComplaintSerializer(comp).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], url_path='handle-complaint', detail=True)
