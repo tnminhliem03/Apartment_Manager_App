@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "ReactNativeDemoApp",
+    "slug": "ReactNativeDemoApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "aef29484-6497-4490-87b1-67e9948d700a"
+      }
+    },
+    "owner": "tnminhliem03"
+  },
+  "name": "ReactNativeDemoApp"
+}

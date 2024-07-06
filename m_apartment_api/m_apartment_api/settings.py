@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 import pymysql
+import stream_chat
 
 pymysql.install_as_MySQLdb()
 
@@ -159,9 +160,9 @@ CLIENT_ID = '4hImR9K2KtPGSj26CxHsmun8xedjHoeb9454ujur'
 CLIENT_SECRET = '0zhxSJ0uJ5UTKnMdJxm6NBsh0LUX73me4QzCxaRFe5iWDIwTB6VBI6bPMQNv0rLCUZJAuWEiilI2K4EIkP3rLVey4RhjwT3iJwQEu4ZxKh89Qcicn77JgGjz7nxWDvZm'
 
 # Pythonanywhere
-CLIENT_ID = 'ZggMjPy3cGKKQT6ms9GSTJIhAfbAsm87R1LTJyOq'
-CLIENT_SECRET = 'guESXoGydjlz9hTuVHaoahwfFBv98laD7kVhcNcBdgfy3HKMCdzjxEImrowaDt9J5o9I0nK3dVaSlulgnQLDSRiyETzAiDCjOsYNFcsdL4q2p0HciD6NN67sqdFxQxdW'
-OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
+CLIENT_ID = 'ixf3r8dG1ckyj2LGi9UQrLhu9cSU8cNyPIDsURrS'
+CLIENT_SECRET = '5EECr7BSNWYN5oaQv6h9fyAfMOFiXcaMd5TvX0DvD0nXCujsiE4SajgkjLHMpERz2VIEYUniJJQtBx6K0COIYctCSYNeMMTHquCyuXYKZEhorV1lhbMOxgYRH82VLamU'
+# OAUTH2_PROVIDER = { 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore' }
 
 # vnpay
 VNPAY_RETURN_URL = 'http://127.0.0.1:8000/paid'  # get from config
@@ -175,3 +176,6 @@ MOMO_PARTNER_CODE = "MOMO"
 MOMO_ACCESS_KEY = "F8BBA842ECF85"
 MOMO_SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
 MOMO_RETURN_URL = "http://127.0.0.1:8000/paid"
+
+APP_ID = 22002
+APP_TOKEN = "lB3kiVHaDJJRC4NROiKcd5"

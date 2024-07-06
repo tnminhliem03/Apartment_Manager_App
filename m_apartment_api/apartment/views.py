@@ -1,5 +1,4 @@
 import re
-
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from rest_framework import viewsets, generics, parsers, permissions, status
@@ -50,6 +49,29 @@ def update_active_payment(payment):
 def create_receipt(payment, order_id, pay_type):
     Receipt.objects.create(name=f'Hóa đơn {payment.name}', amount=payment.amount, payment=payment,
                            resident=payment.resident, order_id=order_id, pay_type=pay_type)
+
+def push_notifications(title, body):
+    endpoint = "https://app.nativenotify.com/api/notification/"
+    appId = settings.APP_ID
+    appToken = settings.APP_TOKEN
+    pushTitle = title
+    pushBody = body
+    now = datetime.now()
+    dateSent = now.strftime("%m-%d-%Y %H:%M%p")
+
+    data = {
+        'appId': appId,
+        'appToken': appToken,
+        'title': pushTitle,
+        'body': pushBody,
+        'dateSent': dateSent
+    }
+
+    json_data = json.dumps(data)
+
+    send = requests.post(endpoint, data=json_data,
+                             headers={'Content-Type': 'application/json'})
+    return None
 
 # momo
 def create_signature(rawSignature):
@@ -216,17 +238,6 @@ def create_link_vnpay(request, payment):
 
     return payment_data
 
-# def transaction_vnp(data_link):
-#     endpoint = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
-#     vnp_Version = data_link['vnp_Version']
-#     vnp_Command = "querydr"
-#     vnp_TmnCode = settings.VNPAY_TMN_CODE
-#     vnp_TxnRef = data_link['vnp_TxnRef']
-#     vnp_OrderInfo = data_link['vnp_OrderInfo']
-#
-
-
-
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -347,6 +358,8 @@ class SecurityCardViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Destr
                                          type_vehicle = request.data.get('type_vehicle'),
                                          resident_id=request.user.id)
         type_vehicle_create_pay(sc)
+        push_notifications("ĐĂNG KÝ THÀNH CÔNG",
+                           'Thẻ xe hợp lệ! Vui lòng cung cấp mã QR cho người thân để sử dụng')
 
         return Response(serializers.SecurityCardSerializer(sc).data, status=status.HTTP_201_CREATED)
 
@@ -364,15 +377,54 @@ class NotificationViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Creat
     serializer_class = serializers.NotificationSerializer
     pagination_class = paginators.BasePaginator
 
+    @action(methods=['post'], url_path='push', detail=False)
+    def push_notif(self, request):
+        title = request.data.get('title')
+        body = request.data.get('body')
+        push_notifications(title, body)
+        return Response({"succesful": "Thông báo đã được gửi đi!"}, status=status.HTTP_200_OK)
+
 class MomoLinkViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = MomoLink.objects.all()
     serializer_class = serializers.MomoLinkSerializer
     pagination_class = paginators.BasePaginator
 
+    def get_permissions(self):
+        if self.action in ['create_link_momo']:
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], url_path='momo', detail=False)
+    def create_link_momo(self, request):
+        payment_id = request.data.get('payment')
+        payment = Payment.objects.get(id=payment_id)
+        if check_active_payment(payment):
+            pay_momo_data = create_link_momo(payment)
+            MomoLink.objects.create(partner_code=pay_momo_data['partnerCode'], order_id=pay_momo_data['orderId'],
+                                    request_id=pay_momo_data['requestId'], amount=pay_momo_data['amount'],
+                                    pay_url=pay_momo_data['payUrl'], short_link=pay_momo_data['shortLink'],
+                                    resident_id=request.user.id, payment=payment)
+        else:
+            return Response({"error": "Hóa đơn đã được thanh toán trước đó!"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data=pay_momo_data)
+
 class MomoPaidViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = MomoPaid.objects.all()
     serializer_class = serializers.MomoPaidSerializer
     pagination_class = paginators.BasePaginator
+
+    def get_permissions(self):
+        if self.action in ['handle_momo']:
+            return [perms.Owner()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], url_path='handle-momo', detail=False)
+    def handle_momo(self, request):
+        save_payment(request)
+        print(save_payment(request))
+        return Response(status=status.HTTP_200_OK)
 
 class VnpayLinkViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = VnpayLink.objects.all()
@@ -505,14 +557,14 @@ class ReceiptViewSet(viewsets.ViewSet, generics.ListAPIView):
         current_receipt = serializers.ReceiptSerializer(self.get_object()).data
         return Response(current_receipt)
 
-class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIView):
+class PackageViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Package.objects.filter(active=True)
     serializer_class = serializers.PackageSerializer
     pagination_class = paginators.BasePaginator
     parser_classes = [parsers.MultiPartParser, ]
 
     def get_permissions(self):
-        if self.action in ['received_package']:
+        if self.action in ['received_package', 'create_packages']:
             return [perms.IsStaff()]
 
         return [permissions.AllowAny()]
@@ -529,6 +581,14 @@ class PackageViewSet(viewsets.ViewSet, generics.ListAPIView, generics.CreateAPIV
             queryset = queryset.filter(resident_id=r_id)
 
         return queryset
+
+    @action(methods=['post'], url_path='create', detail=False)
+    def create_packages(self, request):
+        pack = Package.objects.create(name=request.data.get('name'), note=request.data.get('note'),
+                                      image=request.data.get('image'), resident=request.user.id)
+        push_notifications("BẠN CÓ MỘT ĐƠN HÀNG MÓN TRONG TỦ ĐỒ",
+                           "Đơn hàng vừa được giao đến, vui lòng liên hệ phòng bảo vệ để nhận!")
+        return Response(status=status.HTTP_200_OK, data=pack)
 
     @action(methods=['post'], url_path='received', detail=True)
     def received_package(self, request, pk):
