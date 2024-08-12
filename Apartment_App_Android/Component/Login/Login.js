@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './Style';
 import Api, { auThApi, endpoints } from '../../Config/Api';
 import MyConText from '../../Config/MyConText';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../Config/Firebase';
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -26,11 +28,15 @@ const Login = ({ navigation }) => {
 
       await AsyncStorage.setItem('token', res.data.access_token);
       // Lưu thông tin người dùng đã đăng nhập vào AsyncStorage
-     
       
+      // test chat app thì mở lên, bth thì cmt lại
+      await signInWithEmailAndPassword(auth, username, password);
+
       navigation.navigate('Main');
 
       dispatch({ type: "login", payload: res.data.user });
+      
+
     } catch (ex) {
       console.error('Login error: User name hoặc mật khẩu không đúng');
       if (ex.response && ex.response.data && ex.response.data.error === 'unsupported_grant_type') {

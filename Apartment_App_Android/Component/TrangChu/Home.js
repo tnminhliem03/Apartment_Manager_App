@@ -3,26 +3,15 @@ import { View, ScrollView, Linking, Platform, PermissionsAndroid } from 'react-n
 import { Appbar, Card, Button, Text, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from "./Style";
+import Api, { endpoints } from '../../Config/Api';
+import axios from 'axios';
+import { checkAppPermission, sendNotif } from '../../PushNotifications';
 
 const Home = ({ navigation }) => {
 
   const openNewsLink = () => {
     const newsLink = 'https://vnexpress.net/chung-khoan-xanh-tro-lai-sau-tuan-mat-100-diem-4737288.html';
     Linking.openURL(newsLink);
-  };
-
-  const checkAppPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-        );
-      } catch(error) {
-        await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-        );
-      }
-    }
   };
 
   useEffect(() => {
@@ -79,7 +68,7 @@ const Home = ({ navigation }) => {
             style={styles.button} 
             onPress={() => navigation.navigate('TuDo')}
           >
-            Đồ Điện
+            Tủ Đồ
           </Button>
           <Button 
             mode="contained" 
@@ -97,7 +86,7 @@ const Home = ({ navigation }) => {
         {/* Available Units */}
         <Card style={styles.dashboardItem}>
           <Card.Title
-            title="Available Units"
+            title="Liên hệ quảng cáo"
             titleStyle={styles.dashboardItemTitle}
             left={(props) => <MaterialCommunityIcons name="home-outline" size={40} style={styles.dashboardItemIcon} />}
             right={(props) => <Avatar.Text size={40} label="8" style={styles.dashboardItemValue} />}
@@ -107,7 +96,7 @@ const Home = ({ navigation }) => {
         {/* Maintenance Requests */}
         <Card style={styles.dashboardItem}>
           <Card.Title
-            title="Maintenance Requests"
+            title="Liên hệ quảng cáo"
             titleStyle={styles.dashboardItemTitle}
             left={(props) => <MaterialCommunityIcons name="wrench-outline" size={40} style={styles.dashboardItemIcon} />}
             right={(props) => <Avatar.Text size={40} label="3" style={styles.dashboardItemValue} />}
@@ -117,7 +106,7 @@ const Home = ({ navigation }) => {
         {/* Upcoming Events */}
         <Card style={styles.dashboardItem}>
           <Card.Title
-            title="Upcoming Events"
+            title="Liên hệ quảng cáo"
             titleStyle={styles.dashboardItemTitle}
             left={(props) => <MaterialCommunityIcons name="calendar-outline" size={40} style={styles.dashboardItemIcon} />}
             right={(props) => <Avatar.Text size={40} label="2" style={styles.dashboardItemValue} />}
@@ -135,7 +124,7 @@ const Home = ({ navigation }) => {
           </Text>
         </Card.Content>
         <Card.Actions>
-          <Button onPress={openNewsLink}>Xem chi tiết</Button>
+          <Button onPress={() => sendNotif('Tân', 'Xin chào Tân')}>Xem chi tiết</Button>
         </Card.Actions>
       </Card>
     </ScrollView>

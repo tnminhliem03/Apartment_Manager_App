@@ -8,8 +8,8 @@ export const endpoints = {
     'complaints' : '/complaints/',
     'login': '/lk/token/',
     'current-user': '/residents/current/',
-    's_questions': '/s_questions/',
-    's_answers': '/s_answers/',
+    's_questions': '/survey_questions/',
+    's_answers': '/survey_answers/',
     'surveys': '/surveys/',
     'receipts' :'/receipts/',
     'packages' :'/packages/',
@@ -20,10 +20,12 @@ export const endpoints = {
     'vnpay_links': '/vnpay_links/',
     'links': '/vnpay_links/links/',
     'momo_links': '/momo_links/',
+    'momo': '/momo_links/momo/',
     'vnpay_paids': '/vnpay_paids/',
     'momo_paids': '/momo_paids/',
     'create-complaint':'/complaints/create-complaint/',
-    'update-profile' :(id) => `/residents/${id}/profile/`
+    'update-profile' :(id) => `/residents/${id}/profile/`,
+    'push-notif': '/notifications/push/'
 }
 
 export const auThApi = (accessToken)=> axios.create({

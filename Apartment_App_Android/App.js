@@ -27,7 +27,6 @@ const TabNavigator = ({navigation}) => {
 
   registerNNPushToken(22002, "lB3kiVHaDJJRC4NROiKcd5");
 
-
   useFocusEffect(
     React.useCallback(() => {
       if (user === null) {
@@ -69,7 +68,7 @@ const TabNavigator = ({navigation}) => {
           }} 
         />
         <Tab.Screen 
-          name="ThongBao" 
+          name="Thông Báo" 
           component={ThongBao} 
           options={{
             tabBarLabel: 'Thông báo',

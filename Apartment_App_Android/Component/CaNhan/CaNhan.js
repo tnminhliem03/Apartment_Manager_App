@@ -187,9 +187,7 @@ const CaNhan = ({ navigation }) => {
                 <Button mode="contained" onPress={() => setEditing(true)} style={styles.button}>
                   Chỉnh Sửa
                 </Button>
-                <Button mode="contained" onPress={handleSupportPress} style={styles.button}>
-                  Hỗ Trợ
-                </Button>
+        
                 <Button mode="outlined" onPress={handleLogoutPress} style={styles.button}>
                   Đăng Xuất
                 </Button>

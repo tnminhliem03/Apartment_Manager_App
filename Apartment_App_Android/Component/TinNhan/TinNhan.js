@@ -1,65 +1,76 @@
-import React, { useState } from 'react';
-import { View, FlatList } from 'react-native';
-import { Text, TextInput, IconButton, Card, Avatar, useTheme } from 'react-native-paper';
-import styles from './Style';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import { TouchableOpacity, Text } from "react-native";
+import { GiftedChat } from "react-native-gifted-chat";
+import {
+  collection,
+  addDoc,
+  orderBy,
+  query,
+  onSnapshot,
+} from "firebase/firestore";
+import { auth, database } from "../../Config/Firebase";
+import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
+import colors from "../../colors";
 
-const TinNhan = () => {
-  const [newMessage, setNewMessage] = useState('');
+export default function Chat() {
   const [messages, setMessages] = useState([]);
-  const quanLyChungCu = 'Người quản lý chung cư'; // Tên người quản lý chung cư
-  const { colors } = useTheme();
+  const navigation = useNavigation();
 
-  const sendMessage = () => {
-    if (newMessage.trim() !== '') {
-      const message = {
-        content: newMessage,
-        sender: 'Bạn',
-      };
-      setMessages([...messages, message]);
-      setNewMessage('');
-    }
-  };
+  useLayoutEffect(() => {
+    const collectionRef = collection(database, "chats");
+    const q = query(collectionRef, orderBy("createdAt", "desc"));
 
-  const renderMessageItem = ({ item }) => (
-    <Card style={[styles.messageContainer, item.sender === 'Bạn' ? styles.userMessage : styles.managerMessage]}>
-      <Card.Title
-        title={item.sender}
-        titleStyle={styles.messageSender}
-        left={(props) => <Avatar.Icon {...props} icon={item.sender === 'Bạn' ? "account" : "account-outline"} />}
-      />
-      <Card.Content>
-        <Text style={styles.messageText}>{item.content}</Text>
-      </Card.Content>
-    </Card>
-  );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log("querySnapshot unsusbscribe");
+      setMessages(
+        querySnapshot.docs.map((doc) => ({
+          _id: doc.data()._id,
+          createdAt: doc.data().createdAt.toDate(),
+          text: doc.data().text,
+          user: doc.data().user,
+        }))
+      );
+    });
+    return unsubscribe;
+  }, []);
+
+  const onSend = useCallback((messages = []) => {
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages)
+    );
+    // setMessages([...messages, ...messages]);
+    const { _id, createdAt, text, user } = messages[0];
+    addDoc(collection(database, "chats"), {
+      _id,
+      createdAt,
+      text,
+      user,
+    });
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        renderItem={renderMessageItem}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.messageList}
-      />
-      <View style={styles.inputContainer}>
-        <TextInput
-          mode="outlined"
-          style={styles.input}
-          value={newMessage}
-          onChangeText={setNewMessage}
-          placeholder={`Nhập tin nhắn cho ${quanLyChungCu}...`}
-          placeholderTextColor="#777"
-        />
-        <IconButton
-          icon="send"
-          color={colors.primary}
-          size={30}
-          onPress={sendMessage}
-          style={styles.sendButton}
-        />
-      </View>
-    </View>
+    <GiftedChat
+      messages={messages}
+      showAvatarForEveryMessage={false}
+      showUserAvatar={false}
+      onSend={(messages) => onSend(messages)}
+      messagesContainerStyle={{
+        backgroundColor: "#fff",
+      }}
+      textInputStyle={{
+        backgroundColor: "#fff",
+        borderRadius: 20,
+      }}
+      user={{
+        _id: auth?.currentUser?.email,
+        avatar: "https://i.pravatar.cc/300",
+      }}
+    />
   );
-};
-
-export default TinNhan;
+}

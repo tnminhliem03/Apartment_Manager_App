@@ -5,6 +5,7 @@ import QRCode from 'react-native-qrcode-svg';
 import Api, { endpoints } from "../../Config/Api"; // Adjust import path as per your project structure
 import styles from "./Style"; // Adjust import path as per your project structure
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { checkAppPermission, sendNotif } from '../../PushNotifications';
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -17,6 +18,10 @@ const Payments = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [paymentDetails, setPaymentDetails] = useState(null);
+
+  useEffect(() => {
+    checkAppPermission();
+  }, []);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -102,19 +107,33 @@ const Payments = () => {
     }
   };
 
-  const handleMomoPayment = (payment) => {
+  const handleMomoPayment = async (payment) => {
     // Check if the payment belongs to the current user
     if (payment.resident !== currentUser.id) {
       Alert.alert('Error', 'You are not authorized to view this payment.');
       return;
     }
 
-    // Mock generating Momo QR code for the payment
-    const mockMomoQRCode = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(payment.id)}&size=200x200`;
-    setMomoQRCode(mockMomoQRCode);
-    setModalContent('momo');
-    setModalVisible(true);
-    setPaymentDetails(payment);
+    const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+
+    const data = {
+      payment: payment.id
+    };
+
+    try {
+      const momoLinks = await Api.post(endpoints['momo'], data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const payUrl = momoLinks.data.payUrl;
+      console.log('Pay URL:', payUrl);
+      Linking.openURL(payUrl);
+    } catch(error) {
+      console.error('Error when making VNP payment:', error);
+    }
   };
 
   const handleVnpayPayment = async (payment) => {
